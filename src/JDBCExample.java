@@ -31,8 +31,8 @@ public class JDBCExample {
 
             ResultSet result3 = stmt.executeQuery(sql3);
             while(result3.next()) {
-                String aid = rs1.getString("accountId");
-                String owner = rs1.getString("primaryOwner");
+                String aid = result3.getString("accountId");
+                String owner = result3.getString("primaryOwner");
                 System.out.print("accountId: " + aid);
                 System.out.println(", owner: " + owner);
             }
