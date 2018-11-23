@@ -3,6 +3,10 @@
 # Compiled class file
 .class
 
+# User-specific stuff:
+.idea/workspace.xml
+.idea/vcs.xml
+
 # Log file
 *.log
 
