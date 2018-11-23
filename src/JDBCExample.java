@@ -11,38 +11,32 @@ public class JDBCExample {
     static final String PASSWORD = System.getenv("PASSWORD");
 
     public static void main(String[] args) {
+        createAccountsTable();
+    }
+
+    public static void createAccountsTable(){
         Connection conn = null;
         Statement stmt = null;
         try{
-            //STEP 2: Register JDBC driver
             Class.forName(JDBC_DRIVER);
-
-            //STEP 3: Open a connection
-            System.out.println("Connecting to a selected database...");
             conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
-            System.out.println("Connected database successfully...");
-
-            //STEP 4: Execute a query
-            System.out.println("Creating statement...");
             stmt = conn.createStatement();
 
-            String sql = "SELECT cid, cname, city, discount FROM cs174.Customers";
-            ResultSet rs = stmt.executeQuery(sql);
-            //STEP 5: Extract data from result set
-            while(rs.next()){
-                //Retrieve by column name
-                String cid  = rs.getString("cid");
-                String cname = rs.getString("cname");
-                String city = rs.getString("city");
-                double discount = rs.getDouble("discount");
+            String sql = "CREATE TABLE Accounts (accountId int, primaryOwner varchar(255), bankBranchName varchar(255))";
+            String sql2 = "INSERT INTO Accounts (accountId, primaryOwner, bankBranchName) VALUES (111, 'Cindy Lu', 'bofa')";
+            String sql3 = "SELECT accountId, primaryOwner FROM Accounts";
+            ResultSet result = stmt.executeQuery(sql);
+            int result2 = stmt.executeUpdate(sql2);
+            System.out.println("Insert items: " + result2);
 
-                //Display values
-                System.out.print("cid: " + cid);
-                System.out.print(", cname: " + cname);
-                System.out.print(", city: " + city);
-                System.out.println(", discount: " + discount);
+            ResultSet result3 = stmt.executeQuery(sql3);
+            while(result3.next()) {
+                String aid = rs1.getString("accountId");
+                String owner = rs1.getString("primaryOwner");
+                System.out.print("accountId: " + aid);
+                System.out.println(", owner: " + owner);
             }
-            rs.close();
+            result3.close();
         }catch(SQLException se){
             //Handle errors for JDBC
             se.printStackTrace();
