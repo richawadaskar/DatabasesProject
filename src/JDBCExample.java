@@ -64,7 +64,7 @@ public class JDBCExample {
         Statement stmt = null;
         try {
             Class.forName(JDBC_DRIVER);
-            conn = DriverManager.getConnection(DB_URL, "cindylu", "3897618");
+            conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
             stmt = conn.createStatement();
 
             DatabaseMetaData dbm = conn.getMetaData();
