@@ -3,11 +3,8 @@ import javax.xml.crypto.Data;
 import java.sql.*;
 
 public class JDBCExample {
-    // JDBC driver name and database URL
     static final String JDBC_DRIVER = "oracle.jdbc.driver.OracleDriver";
     static final String DB_URL = "jdbc:oracle:thin:@cloud-34-133.eci.ucsb.edu:1521:XE";
-
-    //  Database credentials
     static final String USERNAME = System.getenv("USERNAME");
     static final String PASSWORD = System.getenv("PASSWORD");
 
@@ -67,8 +64,15 @@ public class JDBCExample {
             conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
             stmt = conn.createStatement();
 
+            // USE THIS TO OUTPUT ALL EXISTING TABLES IN DATABASE
+            String sql = "SELECT table_name FROM all_tables";
+            ResultSet tables1 = stmt.executeQuery(sql);
+            while(tables1.next()){
+                System.out.println(tables1.getString(1));
+            }
+
             DatabaseMetaData dbm = conn.getMetaData();
-            ResultSet tables = dbm.getTables(null, null, "Customers", null);
+            ResultSet tables = dbm.getTables(null, null, "CUSTOMERS", null);
             if(tables.next()) {
                 //Customers table exists
                 //sampleQueries(stmt);
@@ -78,7 +82,7 @@ public class JDBCExample {
                 System.out.println("Table does not exist");
             }
 
-            tables = dbm.getTables(null, null, "Accounts", null);
+            tables = dbm.getTables(null, null, "AGENTS", null);
             if(tables.next()) {
                 //Accounts table exists
                 //sampleQueries(stmt);
