@@ -15,9 +15,16 @@ public class JDBCExample {
     }
 
     public static void createCustomersTable(Statement stmt) throws SQLException {
-        String sql = "INSERT INTO Customers (taxId, name, address, pin) VALUES (001, 'Denise', 'SB', '1121')";
-        int result = stmt.executeUpdate(sql);
-        System.out.println("num rows edited: " + result);
+        String createCustomers = "CREATE TABLE Customers " +
+                "(taxId int, " +
+                "name varchar(255) NOT NULL, " +
+                "address varchar(255) NOT NULL, " +
+                "pin varcar(4) NOT NULL, " +
+                "PRIMARY KEY(texId))";
+        ResultSet create = stmt.executeQuery(createCustomers);
+        //String sql = "INSERT INTO Customers (taxId, name, address, pin) VALUES (001, 'Denise', 'SB', '1121')";
+        //int result = stmt.executeUpdate(sql);
+        //System.out.println("num rows edited: " + result);
     }
 
     public static void createAccountsTable(Statement stmt) throws SQLException{
