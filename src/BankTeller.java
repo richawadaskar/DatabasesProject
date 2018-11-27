@@ -7,6 +7,7 @@ import javax.swing.*;
 
 public class BankTeller {
 	
+	JFrame frame;
 	JButton checkTransaction;
 	JButton generateMonthlyStatement;
 	JButton closedAccounts;
@@ -16,15 +17,27 @@ public class BankTeller {
 	JButton createAccount;
 	JButton deleteClosedAccountsCustomers;
 	JButton deleteTransactions;
+	JButton backButtonToBankTeller;
+	JButton backButton;
 	JPanel panel;
+	JPanel backPanel;
 	
 	BankTeller(){
 		// launch a bankteller interface with all the options.
-       JFrame frame = new JFrame("Welcome Bank Teller!");
+       frame = new JFrame("Welcome Bank Teller!");
        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-       frame.setSize(900,300);
+       frame.setSize(900,200);
        frame.setLocationRelativeTo(null);
        
+       setUpInitialScreen();
+
+	   frame.getContentPane().add(BorderLayout.NORTH, backPanel);
+       frame.getContentPane().add(BorderLayout.CENTER, panel); 
+
+       frame.setVisible(true);
+	}
+	
+	public void setUpInitialScreen() {
        // create all buttons needed
        checkTransaction = new JButton("Check Transaction");
 	   generateMonthlyStatement = new JButton("Generate Monthly Statement");
@@ -46,9 +59,20 @@ public class BankTeller {
 	   createAccount.addActionListener(new AccountCreation());
 	   deleteClosedAccountsCustomers.addActionListener(new DeletingAccountsCustomers());
 	   deleteTransactions.addActionListener(new DeletingTransactions());
-	   
+
+	   backButton = new JButton("Back");
+	   backButton.addActionListener(new BackButtonListener());
+	   backButtonToBankTeller = new JButton("Back");
+	   backButtonToBankTeller.addActionListener(new BackButtonToBankTellerListener());
+
 	   // add buttons to grid
 	   panel = new JPanel(new GridLayout(3,3));
+	   backPanel = new JPanel();
+
+	   bankTellerScreen();
+	}
+	
+	public void bankTellerScreen() {
 	   panel.add(checkTransaction);
 	   panel.add(generateMonthlyStatement);
 	   panel.add(closedAccounts);
@@ -58,13 +82,40 @@ public class BankTeller {
 	   panel.add(createAccount);
 	   panel.add(deleteClosedAccountsCustomers);
 	   panel.add(deleteTransactions);
-	  
-       frame.getContentPane().add(panel); // Adds Button to content pane of frame
-       frame.setVisible(true);
+	   
+	   backPanel.add(backButton);
 	}
 	
 	public static void main(String[] args) {
 		BankTeller a = new BankTeller();
+	}
+
+	void setUpBackPanelToBankTeller(){
+		backPanel.removeAll();
+		backPanel.add(backButtonToBankTeller);
+		backPanel.updateUI();
+	}
+	
+	private class BackButtonListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			System.out.println("In the first back button");
+		}
+	}
+	
+	private class BackButtonToBankTellerListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			System.out.println("In the nested back button :D");
+			
+			panel.removeAll();
+			backPanel.removeAll();
+			bankTellerScreen();
+			panel.updateUI();
+			backPanel.updateUI();
+		}
 	}
 	
 	private class Transaction implements ActionListener {
@@ -73,6 +124,8 @@ public class BankTeller {
 			// TODO Auto-generated method stub
 			System.out.println("transaction clicked");
 			panel.removeAll();
+			
+			setUpBackPanelToBankTeller();
 			
 			JButton trans = new JButton("YAY MADE IT");
 			panel.add(trans);
