@@ -38,7 +38,16 @@ public class BankTeller {
 	}
 	
 	public void setUpInitialScreen() {
+		
+	   panel = new JPanel(new GridLayout(3,3));
+	   backPanel = new JPanel();
+
        // create all buttons needed
+	   backButton = new JButton("Back");
+	   backButton.addActionListener(new BackButtonListener());
+	   backButtonToBankTeller = new JButton("Back");
+	   backButtonToBankTeller.addActionListener(new BackButtonToBankTellerListener());
+
        checkTransaction = new JButton("Check Transaction");
 	   generateMonthlyStatement = new JButton("Generate Monthly Statement");
 	   closedAccounts = new JButton("List Closed Accounts");
@@ -50,7 +59,7 @@ public class BankTeller {
 	   deleteTransactions = new JButton("Delete Transactions");
 
 	   // add action listeners for buttons
-	   checkTransaction.addActionListener(new Transaction());
+	   checkTransaction.addActionListener(new TransactionListener(panel, backButtonToBankTeller));
 	   generateMonthlyStatement.addActionListener(new MonthlyStatement());
 	   closedAccounts.addActionListener(new AccountsClosed());
 	   DTER.addActionListener(new GTDReport());
@@ -59,15 +68,6 @@ public class BankTeller {
 	   createAccount.addActionListener(new AccountCreation());
 	   deleteClosedAccountsCustomers.addActionListener(new DeletingAccountsCustomers());
 	   deleteTransactions.addActionListener(new DeletingTransactions());
-
-	   backButton = new JButton("Back");
-	   backButton.addActionListener(new BackButtonListener());
-	   backButtonToBankTeller = new JButton("Back");
-	   backButtonToBankTeller.addActionListener(new BackButtonToBankTellerListener());
-
-	   // add buttons to grid
-	   panel = new JPanel(new GridLayout(3,3));
-	   backPanel = new JPanel();
 
 	   bankTellerScreen();
 	}
@@ -109,7 +109,7 @@ public class BankTeller {
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
 			System.out.println("In the nested back button :D");
-			
+						
 			panel.removeAll();
 			backPanel.removeAll();
 			bankTellerScreen();
@@ -118,26 +118,18 @@ public class BankTeller {
 		}
 	}
 	
-	private class Transaction implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent arg0) {
-			// TODO Auto-generated method stub
-			System.out.println("transaction clicked");
-			panel.removeAll();
-			
-			setUpBackPanelToBankTeller();
-			
-			JButton trans = new JButton("YAY MADE IT");
-			panel.add(trans);
-			
-			panel.updateUI();
-		}
-	}
 	private class MonthlyStatement implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			// TODO Auto-generated method stub
 			System.out.println("monthly statements clicked");
+			
+			setUpBackPanelToBankTeller();
+			
+			panel.removeAll();
+			JButton trans = new JButton("YAY MADE IT");
+			panel.add(trans);
+			panel.updateUI();
 		}
 	}
 	private class AccountsClosed implements ActionListener {
@@ -145,6 +137,13 @@ public class BankTeller {
 		public void actionPerformed(ActionEvent arg0) {
 			// TODO Auto-generated method stub
 			System.out.println("close accounts clicked");
+			
+			setUpBackPanelToBankTeller();
+			
+			panel.removeAll();
+			JButton trans = new JButton("YAY MADE IT");
+			panel.add(trans);
+			panel.updateUI();
 		}
 	}
 	private class GTDReport implements ActionListener {
@@ -152,6 +151,13 @@ public class BankTeller {
 		public void actionPerformed(ActionEvent arg0) {
 			// TODO Auto-generated method stub
 			System.out.println("GTDR clicked");
+			
+			setUpBackPanelToBankTeller();
+			
+			panel.removeAll();
+			JButton trans = new JButton("YAY MADE IT");
+			panel.add(trans);
+			panel.updateUI();
 		}
 	}
 	private class CustomerReport implements ActionListener {
@@ -159,6 +165,13 @@ public class BankTeller {
 		public void actionPerformed(ActionEvent arg0) {
 			// TODO Auto-generated method stub
 			System.out.println("customer report clicked");
+			
+			setUpBackPanelToBankTeller();
+			
+			panel.removeAll();
+			JButton trans = new JButton("YAY MADE IT");
+			panel.add(trans);
+			panel.updateUI();
 		}
 	}
 	private class InterestAction implements ActionListener {
@@ -166,6 +179,13 @@ public class BankTeller {
 		public void actionPerformed(ActionEvent arg0) {
 			// TODO Auto-generated method stub
 			System.out.println("add interest clicked");
+			
+			setUpBackPanelToBankTeller();
+			
+			panel.removeAll();
+			JButton trans = new JButton("YAY MADE IT");
+			panel.add(trans);
+			panel.updateUI();
 		}
 	}
 	private class AccountCreation implements ActionListener {
@@ -173,6 +193,13 @@ public class BankTeller {
 		public void actionPerformed(ActionEvent arg0) {
 			// TODO Auto-generated method stub
 			System.out.println("create accounts clicked");
+			
+			setUpBackPanelToBankTeller();
+			
+			panel.removeAll();
+			JButton trans = new JButton("YAY MADE IT");
+			panel.add(trans);
+			panel.updateUI();
 		}
 	}
 	private class DeletingAccountsCustomers implements ActionListener {
@@ -180,6 +207,13 @@ public class BankTeller {
 		public void actionPerformed(ActionEvent arg0) {
 			// TODO Auto-generated method stub
 			System.out.println("deleting accounts customers clicked");
+			
+			setUpBackPanelToBankTeller();
+			
+			panel.removeAll();
+			JButton trans = new JButton("YAY MADE IT");
+			panel.add(trans);
+			panel.updateUI();
 		}
 	}
 	private class DeletingTransactions implements ActionListener {
@@ -187,6 +221,13 @@ public class BankTeller {
 		public void actionPerformed(ActionEvent arg0) {
 			// TODO Auto-generated method stub
 			System.out.println("deleting transactions clicked");
+			
+			setUpBackPanelToBankTeller();
+			
+			panel.removeAll();
+			JButton trans = new JButton("YAY MADE IT");
+			panel.add(trans);
+			panel.updateUI();
 		}
 	}
 }
