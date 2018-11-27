@@ -13,12 +13,13 @@ public class JDBCExample {
     }
 
     public static void createCustomersTable(Statement stmt) throws SQLException {
-        String createCustomers = "CREATE TABLE Customers " +
+        String createCustomers = String.format("CREATE TABLE %sCustomers " +
                 "(taxId int, " +
                 "name varchar(255) NOT NULL, " +
                 "address varchar(255) NOT NULL, " +
                 "pin varchar(4) NOT NULL, " +
-                "PRIMARY KEY(taxId))";
+                "PRIMARY KEY(taxId))", USERNAME);
+        System.out.println(createCustomers);
         ResultSet create = stmt.executeQuery(createCustomers);
         //String sql = "INSERT INTO Customers (taxId, name, address, pin) VALUES (001, 'Denise', 'SB', '1121')";
         //int result = stmt.executeUpdate(sql);
@@ -27,7 +28,10 @@ public class JDBCExample {
 
     public static void createAccountsTable(Statement stmt) throws SQLException{
 
-        String sql = "CREATE TABLE Accounts (accountId int, primaryOwner varchar(255), bankBranchName varchar(255))";
+        String sql = String.format("CREATE TABLE %sAccounts " +
+                "(accountId int, " +
+                "primaryOwner varchar(255), " +
+                "bankBranchName varchar(255))", USERNAME);
         ResultSet result = stmt.executeQuery(sql);
 
         //String s1 = "DROP TABLE Accounts";
@@ -64,34 +68,43 @@ public class JDBCExample {
             conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
             stmt = conn.createStatement();
 
+
             // USE THIS TO OUTPUT ALL EXISTING TABLES IN DATABASE
-            String sql = "SELECT table_name FROM all_tables";
-            ResultSet tables1 = stmt.executeQuery(sql);
+            String sql2 = "SELECT table_name FROM user_tables";
+            ResultSet tables1 = stmt.executeQuery(sql2);
             while(tables1.next()){
                 System.out.println(tables1.getString(1));
             }
 
+            String customersTableName = String.format("%sCUSTOMERS", USERNAME);
             DatabaseMetaData dbm = conn.getMetaData();
-            ResultSet tables = dbm.getTables(null, null, "CUSTOMERS", null);
+            ResultSet tables = dbm.getTables("user_tables", null, customersTableName.toUpperCase(), null);
             if(tables.next()) {
                 //Customers table exists
                 //sampleQueries(stmt);
                 System.out.println("Table exists");
             } else {
-                //createCustomersTable(stmt);
+                createCustomersTable(stmt);
                 System.out.println("Table does not exist");
             }
 
-            tables = dbm.getTables(null, null, "AGENTS", null);
+            String accountsTableName = String.format("%sACCOUNTS", USERNAME);
+            tables = dbm.getTables("user_tables", null, accountsTableName.toUpperCase(), null);
             if(tables.next()) {
                 //Accounts table exists
                 //sampleQueries(stmt);
                 System.out.println("Table exists");
             } else {
-                //createAccountsTable(stmt);
+                createAccountsTable(stmt);
                 System.out.println("Table does not exist");
             }
-            sampleQueries(stmt);
+            //sampleQueries(stmt);
+
+            // USE THIS TO OUTPUT ALL EXISTING TABLES IN DATABASE
+            tables1 = stmt.executeQuery(sql2);
+            while(tables1.next()){
+                System.out.println(tables1.getString(1));
+            }
 
 
         } catch(SQLException se){
