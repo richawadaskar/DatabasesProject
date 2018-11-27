@@ -10,6 +10,7 @@ public class JDBCExample {
 
     public static void main(String[] args) {
         createTables();
+        // hello 
     }
 
     public static void createCustomersTable(Statement stmt) throws SQLException {
