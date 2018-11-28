@@ -29,7 +29,6 @@ public class BankTeller {
 	
 	BankTeller(){
 		// launch a bankteller interface with all the options.
-		app = new Application();
        frame = new JFrame("Welcome Bank Teller!");
        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
        frame.setSize(900,200);
@@ -108,9 +107,9 @@ public class BankTeller {
 			// TODO Auto-generated method stub
 			System.out.println("In the first back button");
 			
-			panel.removeAll();
-			backPanel.removeAll();
-			app.setUpUI();
+			//panel.removeAll();
+			//backPanel.removeAll();
+			//app.updateUI();
 		}
 	}
 	
