@@ -71,9 +71,7 @@ public class ATM {
 
     public void checkCredentials(String pin) {
         //Check if username exists. If exists, check if PIN matches
-    }
-
-    public static void main(String[] args) {
-        
+    	String usernameQuery = String.format("SELECT username FROM Richa_Wadaskar_CUSTOMERS WHERE username = richa_wadaskar");
+    	
     }
 }

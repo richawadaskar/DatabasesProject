@@ -2,11 +2,14 @@
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.Statement;
 
 import javax.swing.*;
 
 public class BankTeller {
 	
+	Application app;
 	JFrame frame;
 	JButton checkTransaction;
 	JButton generateMonthlyStatement;
@@ -21,9 +24,12 @@ public class BankTeller {
 	JButton backButton;
 	JPanel panel;
 	JPanel backPanel;
+	static Connection conn;
+	static Statement stmt;
 	
 	BankTeller(){
 		// launch a bankteller interface with all the options.
+		app = new Application();
        frame = new JFrame("Welcome Bank Teller!");
        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
        frame.setSize(900,200);
@@ -38,7 +44,7 @@ public class BankTeller {
 	}
 	
 	public void setUpInitialScreen() {
-		
+	
 	   panel = new JPanel(new GridLayout(3,3));
 	   backPanel = new JPanel();
 
@@ -101,6 +107,10 @@ public class BankTeller {
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
 			System.out.println("In the first back button");
+			
+			panel.removeAll();
+			backPanel.removeAll();
+			app.setUpUI();
 		}
 	}
 	

@@ -1,6 +1,6 @@
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
+import java.sql.*;
 
 import javax.swing.*;
 
@@ -29,7 +29,6 @@ public class CheckTransactionListener implements ActionListener {
 		
 		panel.removeAll();
 		
-		// create panel that asks for account number, and check amount and edit transaction table
 		JLabel accountNumberLabel = new JLabel("Enter Account Number: ");
 		accountNumber = new JTextField(20);
 		
@@ -38,7 +37,6 @@ public class CheckTransactionListener implements ActionListener {
 		
 		JButton enter = new JButton("Enter");
 		enter.addActionListener(new EnterListener());
-		// add action listener for enter and then do background shit. Show pop ups if info is wrong.
 		
 		panel.add(accountNumberLabel);
 		panel.add(accountNumber);
@@ -53,9 +51,43 @@ public class CheckTransactionListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			// TODO Auto-generated method stub
+			
+			int accountId = Integer.parseInt(accountNumber.getText());
+			int amountCheck = Integer.parseInt(checkAmount.getText());
+			
+			// check if account exists and that its type has ability to write check from. 
+			String accountExists = "SELECT COUNT(accountId) FROM RICHA_WADASKAR_CUSTOMERS WHERE accountId =" + accountId;
+			// ResultSet exists = Main.stmt.executeQuery(accountExists);
+			// if(exists != 1) {
+			// 	 error bitches...  exit function.
+			// }
+			
+			// check if account has enough money. 
+			String balanceQuery = "SELECT balance FROM RICHA_WADASKAR_CUSTOMERS WHERE accountId =" + accountId; 
+			double balance = 0;
+			try {
+				balance = BankTeller.stmt.executeQuery(balanceQuery).getDouble(1);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			// Update account
+			if(balance < amountCheck) {
+				
+				System.out.println("Yikes balance is low.");
+			
+			} else {
+				
+				String query = "UPDATE RICHA_WADASKAR_CUSTOMERS SET balance = balance - " + balance;
+				// ResultSet accountId = MAIN.stmt.executeQuery(query);
+
+			}
+			
+			
 			System.out.println("Enter was pressed.");
 			
-			System.out.println("Account number entered was: " + accountNumber.getText());
+			System.out.println("Account number entered was: " + accountId);
 			System.out.println("Amount for check is: " + checkAmount.getText());
 
 		}
