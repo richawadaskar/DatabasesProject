@@ -20,7 +20,7 @@ public class Application {
 	}
 	
 	public void setUpUI() {
-		frame = new JFrame("Welcome Bank Teller!");
+		frame = new JFrame("ATM or Bank Teller");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setSize(900,300);
 	    frame.setLocationRelativeTo(null);

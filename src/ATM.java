@@ -1,6 +1,11 @@
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 import javax.swing.*;
 
@@ -13,12 +18,17 @@ public class ATM {
 	JPanel backPanel;
 	JPanel panel;
 	JPanel appPanel;
-	JFrame frame;
+	JLabel wrongPIN;
 	Application app;
+	
+	static final String JDBC_DRIVER = "oracle.jdbc.driver.OracleDriver";
+    static final String DB_URL = "jdbc:oracle:thin:@cloud-34-133.eci.ucsb.edu:1521:XE";
+    static final String USERNAME = System.getenv("USERNAME");
+    static final String PASSWORD = System.getenv("PASSWORD");
 
     public ATM(JFrame frame, JPanel appPanel) {
     	app = new Application();
-    	this.frame = frame;
+    	frame.setTitle("ATM");
     	this.appPanel = appPanel;
     	appPanel.removeAll();
     	
@@ -32,6 +42,7 @@ public class ATM {
     
     public void setUpATMScreen() {
     	pin = new JLabel("Enter your PIN:");
+    	wrongPIN = new JLabel("WRONG PIN. TRY AGAIN");
     	pinField = new JPasswordField(4);
     	OKButton = new JButton("OK");
         OKButton.addActionListener(new OKBtnClicked());
@@ -64,16 +75,67 @@ public class ATM {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            checkCredentials(pinField.getPassword().toString());
+            checkCredentials(new String(pinField.getPassword()));
         }
 
     }
 
-    public void checkCredentials(String pin) {
-        //Check if username exists. If exists, check if PIN matches
+    public void checkCredentials(String pinn) {
+        //Check if PIN exists
+    	Connection conn = null;
+    	Statement stmt = null;
+    	try {
+    		Class.forName(JDBC_DRIVER);
+    		conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+    	    stmt = conn.createStatement();
+    	    
+    	    String sql3 = String.format("SELECT * FROM %sCUSTOMERS", USERNAME);
+            ResultSet result3 = stmt.executeQuery(sql3);
+            while(result3.next()) {
+                String taxId = result3.getString("taxId");
+                String name = result3.getString("name");
+                String address = result3.getString("address");
+                String pin = result3.getString("pin");
+                System.out.print("taxId: " + taxId);
+                System.out.print(", name: "+ name);
+                System.out.print(", address: "+ address);
+                System.out.println(", pin: " + pin );
+                System.out.println();
+            }
+            result3.close();
+            
+    	    String sql2 = String.format("SELECT * FROM %sCUSTOMERS WHERE PIN = %s", USERNAME, pinn);
+            ResultSet tables1 = stmt.executeQuery(sql2);
+            if(tables1.next()){
+                System.out.println(tables1.getString("pin"));
+                ATMOption atmo = new ATMOption(frame, panel);
+                setUpATMOptions();
+            } else {
+            	System.out.println("PIN does not exist.");
+            	panel.add(wrongPIN);
+            	panel.updateUI();
+            	pinField.cut();
+            }
+            
+    	}catch(Exception e){
+            e.printStackTrace();
+        }finally{
+            try{
+                if(stmt!=null)
+                    conn.close();
+            }catch(SQLException se){
+            }
+            try{
+                if(conn!=null)
+                    conn.close();
+            }catch(SQLException se){
+                se.printStackTrace();
+            }
+        }
+
+    	
     }
 
-    public static void main(String[] args) {
-        
-    }
+    
+    
 }
