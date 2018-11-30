@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -29,14 +30,13 @@ public class GenerateMonthlyStatementListener implements ActionListener {
 		
 		panel.removeAll();
 		
-		JLabel customerIdLabel = new JLabel("Enter Customer Id: ");
-		JTextField customerId = new JTextField();
+		int enterSSN = Integer.parseInt(JOptionPane.showInputDialog(BankTeller.frame, "Enter Customer's ssn: "));
+
+		// query for all 
 		
 		// query the transactions table for all transactions with this customer account.
 		// Generate a pop up text view with all the information needed for this report.
 		
-		panel.add(customerIdLabel);
-		panel.add(customerId);
 		panel.updateUI();
 
 	}

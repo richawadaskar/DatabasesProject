@@ -19,14 +19,12 @@ public class Application {
 	static JButton BankTeller;
 	static JPanel panel;
 	static JFrame frame;
-	Connection conn = null;
+	static Connection conn = null;
 	public static Statement stmt = null;
 	
 	static Application app = null;
 	public ATM atm;
 	
-	Application() {}
-
 	public static void main(String[] args) {
 		app = new Application();
 		

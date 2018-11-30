@@ -2,9 +2,13 @@ package BankTellerFunctions;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
+
+import DebtsRus.Application;
 
 public class DeleteTransactionsListener implements ActionListener {
 
@@ -26,10 +30,22 @@ public class DeleteTransactionsListener implements ActionListener {
 		BankTellerUtility.setUpBackPanelToBankTeller(backPanel, backButton);
 		
 		panel.removeAll();
-		JButton trans = new JButton("YAY MADE IT");
-		panel.add(trans);
+		
+		String query = "DELETE FROM CR_TRANSACTIONS";
+		
+		try {
+			int numUpdated = Application.stmt.executeUpdate(query);
+			
+			BankTellerUtility.showPopUpMessage("Successful brother. Updated " + numUpdated + " rows.");
+			
+			panel.removeAll();
+			BankTellerUtility.setUpBackPanelToBankTeller(backPanel, backButton);
+			
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		panel.updateUI();
-
 	}
-	
 }

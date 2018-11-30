@@ -6,15 +6,21 @@ import java.sql.*;
 
 import javax.swing.*;
 
+import DebtsRus.Application;
+
 public class CheckTransactionListener implements ActionListener {
 
 	JPanel backPanel;
 	JPanel panel;
 	JButton backButton;
 	
-	//JLabel accountNumberLabel;
 	JTextField accountNumber;
 	JTextField checkAmount;
+	JTextField customerSSN;
+	
+	int accountId;
+	double amountCheck;
+	int ssn;
 	
 	CheckTransactionListener(JPanel incomingPanel, JPanel incomingBackPanel, JButton incomingButton) {
 		backPanel = incomingBackPanel;
@@ -34,6 +40,9 @@ public class CheckTransactionListener implements ActionListener {
 		JLabel accountNumberLabel = new JLabel("Enter Account Number: ");
 		accountNumber = new JTextField(20);
 		
+		JLabel customerId = new JLabel("Enter Customer SSN: ");
+		customerSSN = new JTextField(20);
+		
 		JLabel checkAmountLabel = new JLabel("Enter Amount for Check: ");
 		checkAmount = new JTextField(20);
 		
@@ -42,6 +51,8 @@ public class CheckTransactionListener implements ActionListener {
 		
 		panel.add(accountNumberLabel);
 		panel.add(accountNumber);
+		panel.add(customerId);
+		panel.add(customerSSN);
 		panel.add(checkAmountLabel);
 		panel.add(checkAmount);
 		panel.add(enter);
@@ -52,54 +63,90 @@ public class CheckTransactionListener implements ActionListener {
 	private class EnterListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			// TODO Auto-generated method stub
-			
 			System.out.println("Enter was clicked.");
 			
-			int accountId = Integer.parseInt(accountNumber.getText());
-			int amountCheck = Integer.parseInt(checkAmount.getText());
-		
-			System.out.println("Account number entered was: " + accountId);
-			System.out.println("Amount for check is: " + amountCheck);
-
-			System.out.println("Hi.");
-			
-			// check if account exists and that its type has ability to write check from. 
-			String accountExists = "SELECT COUNT(accountId) FROM RICHA_WADASKAR_CUSTOMERS WHERE accountId =" + accountId;
-			// ResultSet exists = Main.stmt.executeQuery(accountExists);
-			// if(exists != 1) {
-			// 	 error bitches...  exit function.
-			// }
-			
-			// check if account has enough money. 
-			String balanceQuery = "SELECT balance FROM RICHA_WADASKAR_CUSTOMERS WHERE accountId =" + accountId; 
-			
-			System.out.println("Hii.");
-
-			double balance = 0;
 			try {
-				ResultSet set = Application.stmt.executeQuery(balanceQuery);
+				accountId = Integer.parseInt(accountNumber.getText());
+				amountCheck = Double.parseDouble(checkAmount.getText());
+				ssn = Integer.parseInt(customerSSN.getText());
 				
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			System.out.println("Hii.");
-			
-			// Update account
-			if(balance < amountCheck) {
+				if(amountCheck <= 0) {
+					BankTellerUtility.showPopUpMessage("Amount to withdraw must be a positive number. Please try again.");
+				} else {
+					updateBalance();
+				}
 				
-				System.out.println("Yikes balance is low.");
-			
-			} else {
-				
-				String query = "UPDATE RICHA_WADASKAR_CUSTOMERS SET balance = balance - " + balance;
-				// ResultSet accountId = MAIN.stmt.executeQuery(query);
-
+			} catch(SQLException e) {
+				BankTellerUtility.showPopUpMessage(e.toString());
+			} catch(Exception e) {
+				BankTellerUtility.showPopUpMessage("Invalid inputs were entered. AccountId and AmountCheck must be positive numbers"
+						+ ". Please try again.");
 			}
 		}
 		
+		public void updateBalance() throws SQLException {	
+			if(existsAccount()) {
+				subtractBalanceAmount();
+			} else {
+				BankTellerUtility.showPopUpMessage("No account with that id exists. Please try again.");
+			}
+		}
+			
+		
+		public boolean existsAccount() throws SQLException {
+			String accountExists = "SELECT * FROM CR_ACCOUNTS WHERE accountId =" + accountId;
+			
+			ResultSet exists = Application.stmt.executeQuery(accountExists);
+			return exists.next();
+		}
+				
+		
+		public void subtractBalanceAmount() {
+			String balanceQuery = "SELECT balance FROM CR_ACCOUNTS WHERE accountId =" + accountId;
+			double balance = -1;
+			try {
+				ResultSet set = Application.stmt.executeQuery(balanceQuery);
+				if(set.next()) balance = set.getInt(1);
+				if(balance < amountCheck) {
+					
+					// TODO: LOOK AT PROJECT DESCRIPTION FOR WHAT TO DO HERE.
+					
+					BankTellerUtility.showPopUpMessage("You do not have enough money in your account " + accountId + 
+							" to withdraw " + amountCheck);
+
+					accountNumber.removeAll();
+					checkAmount.removeAll();
+					panel.updateUI();
+					
+				} else {
+					String query = "UPDATE CR_ACCOUNTS SET balance = balance - " + amountCheck;
+					int id = Application.stmt.executeUpdate(query);
+					
+					int checkNumber = generateCheckNumber();
+					assert(id == 1);
+					BankTellerUtility.showPopUpMessage("You have written a check for " + amountCheck + ". Your check"
+							+ " number is: " + checkNumber);
+					
+					
+					int transactionId = (int)(Math.random() * 157);
+					String type = "Write check";
+					String transactionsQuery = "INSERT INTO CR_TRANSACTIONS "
+							+ "VALUES( " + transactionId + ", " + type + ", " + ssn + ", " + accountId + ", null, " + amountCheck + ", "
+									+ "'checkNumber: " + checkNumber + "')";
+					
+					accountNumber.removeAll();
+					checkAmount.removeAll();
+					panel.updateUI();
+				}
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
+	public int generateCheckNumber() {
+		
+		return (int) (Math.random() * 250.234);
+	}
 }

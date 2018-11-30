@@ -90,7 +90,7 @@ public class ATM {
         //Check if PIN exists
     	String sql3 = "SELECT * FROM CR_CUSTOMER";
     	try {
-	    	ResultSet result3 = app.stmt.executeQuery(sql3);
+   	    	ResultSet result3 = app.stmt.executeQuery(sql3);
 	    	while(result3.next()) {
 	    		String ssn = result3.getString("ssn");
 	    		String name = result3.getString("name");

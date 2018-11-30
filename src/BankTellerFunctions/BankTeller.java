@@ -13,7 +13,7 @@ import DebtsRus.Application;
 public class BankTeller {
 	
 	Application app;
-	JFrame frame;
+	public static JFrame frame;
 	JButton checkTransaction;
 	JButton generateMonthlyStatement;
 	JButton closedAccounts;
@@ -50,8 +50,6 @@ public class BankTeller {
 	}
 	
 	public void setUpInitialScreen() {
-		panel.setLayout(new GridLayout(3,3));
-	
 		backPanel = new JPanel();
 		
 		// create all buttons needed
@@ -85,6 +83,8 @@ public class BankTeller {
 	}
 	
 	public void bankTellerScreen() {
+	   panel.setLayout(new GridLayout(3,3));
+
 	   panel.add(checkTransaction);
 	   panel.add(generateMonthlyStatement);
 	   panel.add(closedAccounts);

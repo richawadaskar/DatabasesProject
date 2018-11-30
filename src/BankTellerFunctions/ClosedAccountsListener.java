@@ -1,10 +1,12 @@
 package BankTellerFunctions;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
+import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-import javax.swing.JButton;
-import javax.swing.JPanel;
+import javax.swing.*;
+import DebtsRus.Application;
 
 public class ClosedAccountsListener implements ActionListener {
 
@@ -26,8 +28,27 @@ public class ClosedAccountsListener implements ActionListener {
 		BankTellerUtility.setUpBackPanelToBankTeller(backPanel, backButton);
 		
 		panel.removeAll();
-		JButton trans = new JButton("YAY MADE IT");
-		panel.add(trans);
+		
+		String query = "SELECT accountId FROM CR_ACCOUNTS WHERE isClosed = 1";
+		try {
+			ResultSet set = Application.stmt.executeQuery(query);
+			
+			String output = "";
+			while(set.next()) {
+				String a = set.getString(1);
+				output += a += "\n";
+			}
+			
+			JLabel display = new JLabel(output);
+			
+			panel.removeAll();
+			panel.add(display);
+			
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		panel.updateUI();
 
 	}
