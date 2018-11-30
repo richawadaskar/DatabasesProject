@@ -19,6 +19,7 @@ public class ATM {
 	JPanel panel;
 	JPanel appPanel;
 	JLabel wrongPIN;
+	JFrame frame;
 	Application app;
 	
 	static final String JDBC_DRIVER = "oracle.jdbc.driver.OracleDriver";
@@ -28,16 +29,17 @@ public class ATM {
 
     public ATM(JFrame frame, JPanel appPanel) {
     	app = new Application();
-    	frame.setTitle("ATM");
+    	this.frame = frame;
+    	this.frame.setTitle("ATM");
     	this.appPanel = appPanel;
     	appPanel.removeAll();
     	
     	setUpATMScreen();
         
-    	frame.getContentPane().add(BorderLayout.NORTH, backPanel);
-        frame.getContentPane().add(BorderLayout.CENTER, panel); 
+    	this.frame.getContentPane().add(BorderLayout.NORTH, backPanel);
+        this.frame.getContentPane().add(BorderLayout.CENTER, panel); 
 
-        frame.setVisible(true);
+        this.frame.setVisible(true);
     }
     
     public void setUpATMScreen() {
@@ -109,7 +111,7 @@ public class ATM {
             if(tables1.next()){
                 System.out.println(tables1.getString("pin"));
                 ATMOption atmo = new ATMOption(frame, panel);
-                setUpATMOptions();
+                atmo.setUpATMOptions();
             } else {
             	System.out.println("PIN does not exist.");
             	panel.add(wrongPIN);

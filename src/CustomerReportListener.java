@@ -4,22 +4,22 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-public class AddInterestListener implements ActionListener {
+public class CustomerReportListener implements ActionListener {
 
 	JPanel backPanel;
 	JPanel panel;
 	JButton backButton;
-	
-	AddInterestListener(JPanel incomingPanel, JPanel incomingBackPanel, JButton incomingButton) {
+
+	CustomerReportListener(JPanel incomingPanel, JPanel incomingBackPanel, JButton incomingButton) {
 		backPanel = incomingBackPanel;
 		backButton = incomingButton;
 		panel = incomingPanel;
 	}
-	
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		System.out.println("add interest clicked");
+		System.out.println("customer report clicked");
 		
 		BankTellerUtility.setUpBackPanelToBankTeller(backPanel, backButton);
 		
@@ -27,6 +27,7 @@ public class AddInterestListener implements ActionListener {
 		JButton trans = new JButton("YAY MADE IT");
 		panel.add(trans);
 		panel.updateUI();
+
 	}
 	
 }

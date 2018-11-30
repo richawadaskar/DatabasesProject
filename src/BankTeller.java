@@ -2,11 +2,14 @@
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.Statement;
 
 import javax.swing.*;
 
 public class BankTeller {
 	
+	Application app;
 	JFrame frame;
 	JButton checkTransaction;
 	JButton generateMonthlyStatement;
@@ -21,6 +24,8 @@ public class BankTeller {
 	JButton backButton;
 	JPanel panel;
 	JPanel backPanel;
+	static Connection conn;
+	static Statement stmt;
 	
 	BankTeller(){
 		// launch a bankteller interface with all the options.
@@ -38,7 +43,7 @@ public class BankTeller {
 	}
 	
 	public void setUpInitialScreen() {
-		
+	
 	   panel = new JPanel(new GridLayout(3,3));
 	   backPanel = new JPanel();
 
@@ -59,15 +64,15 @@ public class BankTeller {
 	   deleteTransactions = new JButton("Delete Transactions");
 
 	   // add action listeners for buttons
-	   checkTransaction.addActionListener(new TransactionListener(panel, backButtonToBankTeller));
-	   generateMonthlyStatement.addActionListener(new MonthlyStatement());
-	   closedAccounts.addActionListener(new AccountsClosed());
-	   DTER.addActionListener(new GTDReport());
-	   customerReport.addActionListener(new CustomerReport());
-	   addInterest.addActionListener(new InterestAction());
-	   createAccount.addActionListener(new AccountCreation());
-	   deleteClosedAccountsCustomers.addActionListener(new DeletingAccountsCustomers());
-	   deleteTransactions.addActionListener(new DeletingTransactions());
+	   checkTransaction.addActionListener(new CheckTransactionListener(panel, backPanel, backButtonToBankTeller));
+	   generateMonthlyStatement.addActionListener(new GenerateMonthlyStatementListener(panel, backPanel, backButtonToBankTeller));
+	   closedAccounts.addActionListener(new ClosedAccountsListener(panel, backPanel, backButtonToBankTeller));
+	   DTER.addActionListener(new DTERListener(panel, backPanel, backButtonToBankTeller));
+	   customerReport.addActionListener(new CustomerReportListener(panel, backPanel, backButtonToBankTeller));
+	   addInterest.addActionListener(new AddInterestListener(panel, backPanel, backButtonToBankTeller));
+	   createAccount.addActionListener(new CreateAccountListener(panel, backPanel, backButtonToBankTeller));
+	   deleteClosedAccountsCustomers.addActionListener(new DeleteClosedAccountsCustomersListener(panel, backPanel, backButtonToBankTeller));
+	   deleteTransactions.addActionListener(new DeleteTransactionsListener(panel, backPanel, backButtonToBankTeller));
 
 	   bankTellerScreen();
 	}
@@ -101,6 +106,10 @@ public class BankTeller {
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
 			System.out.println("In the first back button");
+			
+			//panel.removeAll();
+			//backPanel.removeAll();
+			//app.updateUI();
 		}
 	}
 	
@@ -115,119 +124,6 @@ public class BankTeller {
 			bankTellerScreen();
 			panel.updateUI();
 			backPanel.updateUI();
-		}
-	}
-	
-	private class MonthlyStatement implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent arg0) {
-			// TODO Auto-generated method stub
-			System.out.println("monthly statements clicked");
-			
-			setUpBackPanelToBankTeller();
-			
-			panel.removeAll();
-			JButton trans = new JButton("YAY MADE IT");
-			panel.add(trans);
-			panel.updateUI();
-		}
-	}
-	private class AccountsClosed implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent arg0) {
-			// TODO Auto-generated method stub
-			System.out.println("close accounts clicked");
-			
-			setUpBackPanelToBankTeller();
-			
-			panel.removeAll();
-			JButton trans = new JButton("YAY MADE IT");
-			panel.add(trans);
-			panel.updateUI();
-		}
-	}
-	private class GTDReport implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent arg0) {
-			// TODO Auto-generated method stub
-			System.out.println("GTDR clicked");
-			
-			setUpBackPanelToBankTeller();
-			
-			panel.removeAll();
-			JButton trans = new JButton("YAY MADE IT");
-			panel.add(trans);
-			panel.updateUI();
-		}
-	}
-	private class CustomerReport implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent arg0) {
-			// TODO Auto-generated method stub
-			System.out.println("customer report clicked");
-			
-			setUpBackPanelToBankTeller();
-			
-			panel.removeAll();
-			JButton trans = new JButton("YAY MADE IT");
-			panel.add(trans);
-			panel.updateUI();
-		}
-	}
-	private class InterestAction implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent arg0) {
-			// TODO Auto-generated method stub
-			System.out.println("add interest clicked");
-			
-			setUpBackPanelToBankTeller();
-			
-			panel.removeAll();
-			JButton trans = new JButton("YAY MADE IT");
-			panel.add(trans);
-			panel.updateUI();
-		}
-	}
-	private class AccountCreation implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent arg0) {
-			// TODO Auto-generated method stub
-			System.out.println("create accounts clicked");
-			
-			setUpBackPanelToBankTeller();
-			
-			panel.removeAll();
-			JButton trans = new JButton("YAY MADE IT");
-			panel.add(trans);
-			panel.updateUI();
-		}
-	}
-	private class DeletingAccountsCustomers implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent arg0) {
-			// TODO Auto-generated method stub
-			System.out.println("deleting accounts customers clicked");
-			
-			setUpBackPanelToBankTeller();
-			
-			panel.removeAll();
-			JButton trans = new JButton("YAY MADE IT");
-			panel.add(trans);
-			panel.updateUI();
-		}
-	}
-	private class DeletingTransactions implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent arg0) {
-			// TODO Auto-generated method stub
-			System.out.println("deleting transactions clicked");
-			
-			setUpBackPanelToBankTeller();
-			
-			panel.removeAll();
-			JButton trans = new JButton("YAY MADE IT");
-			panel.add(trans);
-			panel.updateUI();
 		}
 	}
 }
