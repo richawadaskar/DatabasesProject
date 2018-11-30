@@ -8,6 +8,8 @@ import java.sql.Statement;
 
 import javax.swing.*;
 
+import DebtsRus.Application;
+
 public class BankTeller {
 	
 	Application app;
@@ -28,7 +30,7 @@ public class BankTeller {
 	static Connection conn;
 	static Statement stmt;
 	
-	BankTeller(Application appl, JPanel pan, JFrame frame){
+	public BankTeller(Application appl, JPanel pan, JFrame frame){
 		// launch a bankteller interface with all the options.
 		app = appl;
 		panel = pan;
