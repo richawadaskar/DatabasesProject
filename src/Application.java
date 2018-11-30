@@ -19,10 +19,12 @@ public class Application {
 	static Connection conn = null;
 	static Statement stmt = null;
 	
+	static Application app = null;
+	
 	Application() {}
 
 	public static void main(String[] args) {
-		Application app = new Application();
+		app = new Application();
 		
 		app.setUpDatabaseConnection();
 		
@@ -68,7 +70,7 @@ public class Application {
 	    ATM.addActionListener(new ATMBtnClicked());
 	    BankTeller.addActionListener(new BankTellerBtnClicked());
 	    
-	    panel = new JPanel(new GridLayout(1,2));
+	    panel = new JPanel();
 	    updateUI();
 	
 		frame.getContentPane().add(panel); // Adds Button to content pane of frame
@@ -78,10 +80,7 @@ public class Application {
 	
 	public void updateUI() {
 		// add buttons to grid
-	    
-		if(ATM == null) System.out.println("ATM IS NULL BITCH");
-		if(panel == null) System.out.println("ATM IS NULL BITCH");
-
+		panel.setLayout(new GridLayout(1,2));
 		panel.add(ATM);
 		panel.add(BankTeller);
 	}
@@ -94,7 +93,7 @@ public class Application {
             goToATM();
         }
         public void goToATM() {
-        	ATM atm = new ATM(frame, panel);
+        	ATM atm = new ATM(frame, panel, app);
         	
         }
 
@@ -108,7 +107,7 @@ public class Application {
             goToBankTeller();
         }
         public void goToBankTeller() {
-        	BankTeller bt = new BankTeller();
+        	BankTeller bt = new BankTeller(app, panel, frame);
         }
 
     }

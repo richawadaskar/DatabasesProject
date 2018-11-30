@@ -26,8 +26,8 @@ public class ATM {
     static final String USERNAME = System.getenv("USERNAME");
     static final String PASSWORD = System.getenv("PASSWORD");
 
-    public ATM(JFrame frame, JPanel panel) {
-    	app = new Application();
+    public ATM(JFrame frame, JPanel panel, Application appl) {
+    	app = appl;
     	this.frame = frame;
     	this.frame.setTitle("ATM");
     	this.panel = panel;
@@ -50,7 +50,6 @@ public class ATM {
         backButton = new JButton("Back");
         backButton.addActionListener(new BackBtnClicked());
        
-        panel = new JPanel();
  	    backPanel = new JPanel();
  	    
         panel.add(pin);

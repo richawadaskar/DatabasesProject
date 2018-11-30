@@ -52,8 +52,15 @@ public class CheckTransactionListener implements ActionListener {
 		public void actionPerformed(ActionEvent arg0) {
 			// TODO Auto-generated method stub
 			
+			System.out.println("Enter was clicked.");
+			
 			int accountId = Integer.parseInt(accountNumber.getText());
 			int amountCheck = Integer.parseInt(checkAmount.getText());
+		
+			System.out.println("Account number entered was: " + accountId);
+			System.out.println("Amount for check is: " + amountCheck);
+
+			System.out.println("Hi.");
 			
 			// check if account exists and that its type has ability to write check from. 
 			String accountExists = "SELECT COUNT(accountId) FROM RICHA_WADASKAR_CUSTOMERS WHERE accountId =" + accountId;
@@ -64,13 +71,19 @@ public class CheckTransactionListener implements ActionListener {
 			
 			// check if account has enough money. 
 			String balanceQuery = "SELECT balance FROM RICHA_WADASKAR_CUSTOMERS WHERE accountId =" + accountId; 
+			
+			System.out.println("Hii.");
+
 			double balance = 0;
 			try {
-				balance = BankTeller.stmt.executeQuery(balanceQuery).getDouble(1);
+				ResultSet set = Application.stmt.executeQuery(balanceQuery);
+				
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
+			System.out.println("Hii.");
 			
 			// Update account
 			if(balance < amountCheck) {
@@ -83,13 +96,6 @@ public class CheckTransactionListener implements ActionListener {
 				// ResultSet accountId = MAIN.stmt.executeQuery(query);
 
 			}
-			
-			
-			System.out.println("Enter was pressed.");
-			
-			System.out.println("Account number entered was: " + accountId);
-			System.out.println("Amount for check is: " + checkAmount.getText());
-
 		}
 		
 	}
