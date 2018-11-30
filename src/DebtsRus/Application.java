@@ -19,8 +19,8 @@ public class Application {
 	static JButton BankTeller;
 	static JPanel panel;
 	static JFrame frame;
-	static Connection conn = null;
-	static Statement stmt = null;
+	Connection conn = null;
+	public static Statement stmt = null;
 	
 	static Application app = null;
 	
@@ -44,19 +44,20 @@ public class Application {
             
         } catch(Exception e){
             e.printStackTrace();
-        } finally{
-            try{
-                if(stmt!=null)
-                    conn.close();
-            }catch(SQLException se){
-            }
-            try{
-                if(conn!=null)
-                    conn.close();
-            }catch(SQLException se){
-                se.printStackTrace();
-            }
         }
+//        } finally{
+//            try{
+//                if(stmt!=null)
+//                    conn.close();
+//            }catch(SQLException se){
+//            }
+//            try{
+//                if(conn!=null)
+//                    conn.close();
+//            }catch(SQLException se){
+//                se.printStackTrace();
+//            }
+//        }
 	}
 	
 	public void setUpUI() {
