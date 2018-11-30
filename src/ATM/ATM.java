@@ -1,4 +1,6 @@
+package ATM;
 import java.awt.*;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
@@ -8,6 +10,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import javax.swing.*;
+
+import DebtsRus.Application;
 
 public class ATM {
 
@@ -51,6 +55,7 @@ public class ATM {
         backButton.addActionListener(new BackBtnClicked());
        
  	    backPanel = new JPanel();
+ 	    panel.setLayout(new FlowLayout());
  	    
         panel.add(pin);
         panel.add(pinField);
@@ -113,7 +118,8 @@ public class ATM {
                 atmo.setUpATMOptions();
             } else {
             	System.out.println("PIN does not exist.");
-            	panel.add(wrongPIN);
+            	JOptionPane.showMessageDialog(frame, "Eggs are not supposed to be green.");
+            	//panel.add(wrongPIN);
             	panel.updateUI();
             	pinField.cut();
             }
