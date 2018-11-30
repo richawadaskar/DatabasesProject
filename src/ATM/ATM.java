@@ -38,14 +38,13 @@ public class ATM {
     	this.panel.removeAll();
     	
     	setUpATMScreen();
-        
-    	this.frame.getContentPane().add(BorderLayout.NORTH, backPanel);
-        this.frame.getContentPane().add(BorderLayout.CENTER, this.panel); 
-
-        this.frame.setVisible(true);
+    	
     }
     
     public void setUpATMScreen() {
+    	backPanel = new JPanel();
+ 	    panel.setLayout(new FlowLayout());
+ 	    
     	pin = new JLabel("Enter your PIN:");
     	wrongPIN = new JLabel("WRONG PIN. TRY AGAIN");
     	pinField = new JPasswordField(4);
@@ -53,15 +52,16 @@ public class ATM {
         OKButton.addActionListener(new OKBtnClicked());
         backButton = new JButton("Back");
         backButton.addActionListener(new BackBtnClicked());
-       
- 	    backPanel = new JPanel();
- 	    panel.setLayout(new FlowLayout());
  	    
         panel.add(pin);
         panel.add(pinField);
         panel.add(OKButton);
         backPanel.add(backButton);
     	
+        frame.getContentPane().add(BorderLayout.NORTH, backPanel);
+        frame.getContentPane().add(BorderLayout.CENTER, this.panel); 
+
+        frame.setVisible(true);
     }
 
     private class BackBtnClicked implements ActionListener {
@@ -88,15 +88,15 @@ public class ATM {
 
     public void checkCredentials(String pinn){
         //Check if PIN exists
-    	String sql3 = String.format("SELECT * FROM %sCUSTOMERS", USERNAME);
+    	String sql3 = "SELECT * FROM CR_CUSTOMER";
     	try {
 	    	ResultSet result3 = app.stmt.executeQuery(sql3);
 	    	while(result3.next()) {
-	    		String taxId = result3.getString("taxId");
+	    		String ssn = result3.getString("ssn");
 	    		String name = result3.getString("name");
 	    		String address = result3.getString("address");
 	    		String pin = result3.getString("pin");
-	    		System.out.print("taxId: " + taxId);
+	    		System.out.print("ssn: " + ssn);
 	    		System.out.print(", name: "+ name);
 	    		System.out.print(", address: "+ address);
 	    		System.out.println(", pin: " + pin );
@@ -107,13 +107,13 @@ public class ATM {
     		e.printStackTrace();
     	}
             
-    	String sql2 = String.format("SELECT * FROM %sCUSTOMERS WHERE PIN = %s", USERNAME, pinn);
+    	String sql2 = ("SELECT * FROM CR_CUSTOMER WHERE PIN = " + pinn);
     	try {
 	    	ResultSet tables1 = app.stmt.executeQuery(sql2);
 	    	if(tables1.next()){
 	    		System.out.println(tables1.getString("pin"));
-	    		ATMOption atmo = new ATMOption(frame, panel);
-	    		atmo.setUpATMOptions();
+	    		ATMOption atmo = new ATMOption(app, frame, panel, backPanel);
+	    		
 	    	} else {
 	    		System.out.println("PIN does not exist.");
 	    		JOptionPane.showMessageDialog(frame, "Eggs are not supposed to be green.");

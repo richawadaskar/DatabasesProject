@@ -23,6 +23,7 @@ public class Application {
 	public static Statement stmt = null;
 	
 	static Application app = null;
+	public ATM atm;
 	
 	Application() {}
 
@@ -89,6 +90,8 @@ public class Application {
 		panel.add(BankTeller);
 	}
 	
+	public ATM getATM() { return atm; }
+	
 	private class ATMBtnClicked implements ActionListener {
 
         @Override
@@ -97,7 +100,7 @@ public class Application {
             goToATM();
         }
         public void goToATM() {
-        	ATM atm = new ATM(frame, panel, app);
+        	atm = new ATM(frame, panel, app);
         }
 
     }
