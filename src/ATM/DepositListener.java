@@ -66,24 +66,29 @@ public class DepositListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
 			int accountId = Integer.parseInt(accountNumber.getText());
-			int amountDeposit = Integer.parseInt(depositAmount.getText());
+			float amountDeposit = Float.parseFloat(depositAmount.getText());
 			
 			// check if account exists and that its type is either checking or saving
-			String accountExists = "SELECT accountId FROM CR_ACCOUNTS WHERE accountId =" + accountId;
+			String accountExists = "SELECT accountId, accountType FROM CR_ACCOUNTS WHERE accountId =" + accountId;
 			try {
 				ResultSet tables1 = Application.stmt.executeQuery(accountExists);
 		    	if(tables1.next()){
-		    		System.out.println(tables1.getInt("accountId"));
+		    		String accountType = tables1.getString("accountType");
 		    		
-		    		String getBalance = "SELECT balance FROM CR_ACCOUNTS WHERE accountId =" + accountId;
-		    		ResultSet balanceTable = Application.stmt.executeQuery(getBalance);
-		    		while(balanceTable.next() ) {
-			    		Float balance = balanceTable.getFloat("balance");
-			    		System.out.println("Initial Money:" + balance);
-			    		
-			    		float afterDeposit = balance + amountDeposit;
-			    		String depositMoney = "Update CR_ACCOUNTS SET balance = " + afterDeposit;
-			    		Application.stmt.executeUpdate(depositMoney);
+		    		//if account type is NOT pocket
+		    		if(!accountType.toLowerCase().equals("pocket")) {
+		    		
+			    		String getBalance = "SELECT balance FROM CR_ACCOUNTS WHERE accountId =" + accountId;
+			    		ResultSet balanceTable = Application.stmt.executeQuery(getBalance);
+			    		while(balanceTable.next() ) {
+				    		Float balance = balanceTable.getFloat("balance");
+				    		System.out.println("Initial Money:" + balance);
+				    		
+				    		ATMOptionUtility.addMoneyToAccountId(accountId, amountDeposit);
+				    		
+			    		}
+		    		} else {
+		    			JOptionPane.showMessageDialog(frame, "Tis is a pocket account. Cannot deposit.");
 		    		}
 		    		
 		    	} else {

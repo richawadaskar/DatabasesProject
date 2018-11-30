@@ -112,7 +112,7 @@ public class ATM {
 	    	ResultSet tables1 = app.stmt.executeQuery(sql2);
 	    	if(tables1.next()){
 	    		System.out.println(tables1.getString("pin"));
-	    		ATMOption atmo = new ATMOption(app, frame, panel, backPanel);
+	    		ATMOption atmo = new ATMOption(app, frame, panel, backPanel, Integer.parseInt(pinn));
 	    		
 	    	} else {
 	    		System.out.println("PIN does not exist.");
