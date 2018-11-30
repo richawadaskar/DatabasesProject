@@ -17,7 +17,6 @@ public class ATM {
 	JButton backButton;
 	JPanel backPanel;
 	JPanel panel;
-	JPanel appPanel;
 	JLabel wrongPIN;
 	JFrame frame;
 	Application app;
@@ -27,17 +26,17 @@ public class ATM {
     static final String USERNAME = System.getenv("USERNAME");
     static final String PASSWORD = System.getenv("PASSWORD");
 
-    public ATM(JFrame frame, JPanel appPanel) {
+    public ATM(JFrame frame, JPanel panel) {
     	app = new Application();
     	this.frame = frame;
     	this.frame.setTitle("ATM");
-    	this.appPanel = appPanel;
-    	appPanel.removeAll();
+    	this.panel = panel;
+    	this.panel.removeAll();
     	
     	setUpATMScreen();
         
     	this.frame.getContentPane().add(BorderLayout.NORTH, backPanel);
-        this.frame.getContentPane().add(BorderLayout.CENTER, panel); 
+        this.frame.getContentPane().add(BorderLayout.CENTER, this.panel); 
 
         this.frame.setVisible(true);
     }
@@ -69,7 +68,8 @@ public class ATM {
 			
 			panel.removeAll();
 			backPanel.removeAll();
-			app.setUpUI();
+			app.updateUI();
+			panel.updateUI();
 		}
 	}
     

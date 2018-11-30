@@ -12,9 +12,9 @@ public class Application {
     static final String USERNAME = System.getenv("USERNAME");
     static final String PASSWORD = System.getenv("PASSWORD");
 
-	JButton ATM;
-	JButton BankTeller;
-	JPanel panel;
+	static JButton ATM;
+	static JButton BankTeller;
+	static JPanel panel;
 	static JFrame frame;
 	static Connection conn = null;
 	static Statement stmt = null;
@@ -68,6 +68,7 @@ public class Application {
 	    ATM.addActionListener(new ATMBtnClicked());
 	    BankTeller.addActionListener(new BankTellerBtnClicked());
 	    
+	    panel = new JPanel(new GridLayout(1,2));
 	    updateUI();
 	
 		frame.getContentPane().add(panel); // Adds Button to content pane of frame
@@ -77,7 +78,10 @@ public class Application {
 	
 	public void updateUI() {
 		// add buttons to grid
-	    panel = new JPanel(new GridLayout(1,2));
+	    
+		if(ATM == null) System.out.println("ATM IS NULL BITCH");
+		if(panel == null) System.out.println("ATM IS NULL BITCH");
+
 		panel.add(ATM);
 		panel.add(BankTeller);
 	}
