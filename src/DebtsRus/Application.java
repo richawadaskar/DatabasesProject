@@ -3,6 +3,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
+import BankTellerFunctions.*;
+import ATM.*;
 
 import javax.swing.*;
 
@@ -95,7 +97,6 @@ public class Application {
         }
         public void goToATM() {
         	ATM atm = new ATM(frame, panel, app);
-        	
         }
 
     }

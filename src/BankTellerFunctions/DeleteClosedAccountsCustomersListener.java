@@ -1,16 +1,18 @@
+package BankTellerFunctions;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-public class DTERListener implements ActionListener {
+public class DeleteClosedAccountsCustomersListener implements ActionListener {
 
 	JPanel backPanel;
 	JPanel panel;
 	JButton backButton;
 	
-	DTERListener(JPanel incomingPanel, JPanel incomingBackPanel, JButton incomingButton) {
+	DeleteClosedAccountsCustomersListener(JPanel incomingPanel, JPanel incomingBackPanel, JButton incomingButton) {
 		backPanel = incomingBackPanel;
 		backButton = incomingButton;
 		panel = incomingPanel;
@@ -19,7 +21,7 @@ public class DTERListener implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		System.out.println("GTDR clicked");
+		System.out.println("deleting accounts customers clicked");
 		
 		BankTellerUtility.setUpBackPanelToBankTeller(backPanel, backButton);
 		

@@ -1,16 +1,18 @@
+package BankTellerFunctions;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-public class DeleteTransactionsListener implements ActionListener {
+public class AddInterestListener implements ActionListener {
 
 	JPanel backPanel;
 	JPanel panel;
 	JButton backButton;
 	
-	DeleteTransactionsListener(JPanel incomingPanel, JPanel incomingBackPanel, JButton incomingButton) {
+	AddInterestListener(JPanel incomingPanel, JPanel incomingBackPanel, JButton incomingButton) {
 		backPanel = incomingBackPanel;
 		backButton = incomingButton;
 		panel = incomingPanel;
@@ -19,7 +21,7 @@ public class DeleteTransactionsListener implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		System.out.println("deleting transactions clicked");
+		System.out.println("add interest clicked");
 		
 		BankTellerUtility.setUpBackPanelToBankTeller(backPanel, backButton);
 		
@@ -27,7 +29,6 @@ public class DeleteTransactionsListener implements ActionListener {
 		JButton trans = new JButton("YAY MADE IT");
 		panel.add(trans);
 		panel.updateUI();
-
 	}
 	
 }
