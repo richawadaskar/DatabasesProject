@@ -2,6 +2,10 @@ package DebtsRus;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.*;
 import BankTellerFunctions.*;
 import ATM.*;
@@ -31,6 +35,36 @@ public class Application {
 		app.setUpDatabaseConnection();
 		
 		app.setUpUI();
+		
+		try {
+
+            BufferedReader file = new BufferedReader(new FileReader("/cs/student/cindylu/cs174A/DatabasesProject/users.csv"));
+            
+            String line = file.readLine();
+            
+            while(!line.equals("")) {
+            	String[] lineParts = line.split(",");
+            	for(int i = 0; i < lineParts.length; i++) {
+            		System.out.print(lineParts[i] + ",");
+            	}
+            	int ssn = Integer.parseInt(lineParts[0]);
+            	if(!BankTellerUtility.existsCustomer(ssn)) {
+            		int pin = Integer.parseInt(lineParts[3]);
+                	ATMOptionUtility.addToCustomersTable(ssn, lineParts[1], lineParts[2], pin);
+            	}
+            	System.out.println();
+            	line = file.readLine();
+            }
+            
+            file.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void setUpDatabaseConnection() {
