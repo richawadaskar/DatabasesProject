@@ -1,5 +1,9 @@
 package ATM;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -124,6 +128,28 @@ public class ATMOptionUtility {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public static void insertIntoCustomerTable() throws SQLException, IOException {
+		BufferedReader customers = new BufferedReader(new FileReader("/cs/student/cindylu/cs174A/DatabasesProject/users.csv"));
+            
+		String line = customers.readLine();
+            
+        while(!line.equals("")) {
+            String[] lineParts = line.split(",");
+            for(int i = 0; i < lineParts.length; i++) {
+            	System.out.print(lineParts[i] + ",");
+            }
+           	System.out.println();
+           	int ssn = Integer.parseInt(lineParts[0]);
+           	if(BankTellerUtility.existsCustomer(ssn)) {
+           		int pin = Integer.parseInt(lineParts[3]);
+           		ATMOptionUtility.addToCustomersTable(ssn,  lineParts[1], lineParts[2], pin);
+           	}
+           	line = customers.readLine();
+        }
+            
+        customers.close();
 	}
 	
 	

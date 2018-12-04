@@ -29,42 +29,14 @@ public class Application {
 	static Application app = null;
 	public ATM atm;
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws SQLException, IOException {
 		app = new Application();
 		
 		app.setUpDatabaseConnection();
 		
 		app.setUpUI();
-		
-		try {
-
-            BufferedReader file = new BufferedReader(new FileReader("/cs/student/cindylu/cs174A/DatabasesProject/users.csv"));
-            
-            String line = file.readLine();
-            
-            while(!line.equals("")) {
-            	String[] lineParts = line.split(",");
-            	for(int i = 0; i < lineParts.length; i++) {
-            		System.out.print(lineParts[i] + ",");
-            	}
-            	int ssn = Integer.parseInt(lineParts[0]);
-            	if(!BankTellerUtility.existsCustomer(ssn)) {
-            		int pin = Integer.parseInt(lineParts[3]);
-                	ATMOptionUtility.addToCustomersTable(ssn, lineParts[1], lineParts[2], pin);
-            	}
-            	System.out.println();
-            	line = file.readLine();
-            }
-            
-            file.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	
+		ATMOptionUtility.insertIntoCustomerTable();
 	}
 	
 	public void setUpDatabaseConnection() {
