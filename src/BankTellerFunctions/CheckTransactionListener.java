@@ -109,8 +109,8 @@ public class CheckTransactionListener implements ActionListener {
 				ResultSet set = Application.stmt.executeQuery(balanceQuery);
 				if(set.next()) balance = set.getInt(1);
 				if(balance < amountCheck) {					
-					BankTellerUtility.showPopUpMessage("You do not have enough money in your account " + accountId + 
-							" to withdraw " + amountCheck);
+					BankTellerUtility.showPopUpMessage("You do not have enough money in your account: " + accountId + 
+							" to withdraw $" + amountCheck);
 
 					accountNumber.removeAll();
 					checkAmount.removeAll();
@@ -122,7 +122,7 @@ public class CheckTransactionListener implements ActionListener {
 					
 					int checkNumber = generateCheckNumber();
 					assert(id == 1);
-					BankTellerUtility.showPopUpMessage("You have written a check for " + amountCheck + ". Your check"
+					BankTellerUtility.showPopUpMessage("You have written a check for $" + amountCheck + ". Your check"
 							+ " number is: " + checkNumber);
 					
 					if(balance - amountCheck <= 0.01) {

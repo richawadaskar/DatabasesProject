@@ -1,5 +1,6 @@
 package DebtsRus;
 import java.awt.*;
+import java.util.Date;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -7,6 +8,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.*;
+import java.text.SimpleDateFormat;
+
 import BankTellerFunctions.*;
 import ATM.*;
 
@@ -28,6 +31,8 @@ public class Application {
 	
 	static Application app = null;
 	public ATM atm;
+	
+	static public Date date = new Date();
 	
 	public static void main(String[] args) throws SQLException, IOException {
 		app = new Application();
@@ -92,6 +97,11 @@ public class Application {
 		panel.setLayout(new GridLayout(1,2));
 		panel.add(ATM);
 		panel.add(BankTeller);
+	}
+	
+	public static String getDate() {
+		SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
+		return sdf.format(date);
 	}
 	
 	public ATM getATM() { return atm; }
