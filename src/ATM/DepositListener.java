@@ -21,15 +21,17 @@ public class DepositListener implements ActionListener {
 	JPanel panel;
 	JButton backButton;
 	JFrame frame;
+	int ssn;
 	
 	JTextField accountNumber;
 	JTextField depositAmount;
 	
-	DepositListener(JPanel incomingPanel, JPanel incomingBackPanel, JButton incomingButton, JFrame incomingFrame) {
+	DepositListener(JPanel incomingPanel, JPanel incomingBackPanel, JButton incomingButton, JFrame incomingFrame, int customerId) {
 		backPanel = incomingBackPanel;
 		backButton = incomingButton;
 		panel = incomingPanel;
 		frame = incomingFrame;
+		ssn = customerId;
 	}
 	
 	@Override
@@ -83,9 +85,11 @@ public class DepositListener implements ActionListener {
 			    		while(balanceTable.next() ) {
 				    		Float balance = balanceTable.getFloat("balance");
 				    		System.out.println("Initial Money:" + balance);
+				    		String date = "to_date('" + Application.getDate() + "', 'mm-dd-yyy')";
 				    		
+				    		ATMOptionUtility.addToTransactionsTable("Deposit", date, ssn, accountId, amountDeposit);
 				    		ATMOptionUtility.addMoneyToAccountId(accountId, amountDeposit);
-				    		
+				    		JOptionPane.showMessageDialog(frame, "Deposit succeeded.");
 			    		}
 		    		} else {
 		    			JOptionPane.showMessageDialog(frame, "Tis is a pocket account. Cannot deposit.");

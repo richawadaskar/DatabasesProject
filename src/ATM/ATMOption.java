@@ -72,9 +72,9 @@ public class ATMOption {
 		payFriend = new JButton("Pay-Friend");
 		
 		// add action listeners for buttons
-		deposit.addActionListener(new DepositListener(panel, backPanel, backButtonToATMOption, frame));
+		deposit.addActionListener(new DepositListener(panel, backPanel, backButtonToATMOption, frame, customerId));
 		topUp.addActionListener(new TopUpListener(panel, backPanel, backButtonToATMOption, frame, customerId));
-		withdrawal.addActionListener(new WithdrawalListener(panel, backPanel, backButtonToATMOption, frame));
+		withdrawal.addActionListener(new WithdrawalListener(panel, backPanel, backButtonToATMOption, frame, customerId));
 		purchase.addActionListener(new PurchaseListener(panel, backPanel, backButtonToATMOption, frame, customerId));
 		transfer.addActionListener(new TransferListener(panel, backPanel, backButtonToATMOption, frame, customerId));
 		collect.addActionListener(new CollectListener(panel, backPanel, backButtonToATMOption));

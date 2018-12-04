@@ -24,14 +24,26 @@ public class ATMOptionUtility {
 	}
 	//transactionId, transactionType, date, customerId, account1Id, amount, otherInformation
 
-	public static void addToTransactionsTable(String transactionType, String date, String name, int account1Id, int account2Id, float amount) throws SQLException {
+	public static void addToTransactionsTable(String transactionType, String date, int ssn, int account1Id, float amount) throws SQLException {
+		int transactionId = BankTellerUtility.getNumberTransactions()+1;
+		//int customerId = getCustomerId(name);
+		
+		
+		
+		String addTransaction = "INSERT into CR_TRANSACTIONS values( "
+				+ transactionId + ", '" + transactionType + "', " + ssn + ", " + account1Id + ", null, " + amount + ", null, " + "to_date('" + Application.getDate() + "', 'mm-dd-yyyy'))";
+		Application.stmt.executeUpdate(addTransaction);
+		
+	}
+	
+	public static void addToTransactionsTable(String transactionType, String date, int ssn, int account1Id, int account2Id, float amount) throws SQLException {
 		int transactionId = BankTellerUtility.getNumberTransactions();
-		int customerId = getCustomerId(name);
+		//int customerId = getCustomerId(name);
 		
 		String addTransaction = "INSERT into CR_TRANSACTIONS values( "
 				+ transactionId + ", "
 				+ transactionType + ", "
-				+ customerId + ", "
+				+ ssn + ", "
 				+ account1Id + ", "
 				+ account2Id + ", "
 				+ amount + ", "
@@ -142,7 +154,7 @@ public class ATMOptionUtility {
             }
            	System.out.println();
            	int ssn = Integer.parseInt(lineParts[0]);
-           	if(BankTellerUtility.existsCustomer(ssn)) {
+           	if(!BankTellerUtility.existsCustomer(ssn)) {
            		int pin = Integer.parseInt(lineParts[3]);
            		ATMOptionUtility.addToCustomersTable(ssn,  lineParts[1], lineParts[2], pin);
            	}
