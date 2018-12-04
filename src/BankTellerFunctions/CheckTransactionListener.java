@@ -37,6 +37,8 @@ public class CheckTransactionListener implements ActionListener {
 		
 		panel.removeAll();
 		
+		panel.setLayout(new GridLayout(4,2));
+		
 		JLabel accountNumberLabel = new JLabel("Enter Account Number: ");
 		accountNumber = new JTextField(20);
 		
@@ -91,7 +93,6 @@ public class CheckTransactionListener implements ActionListener {
 				BankTellerUtility.showPopUpMessage("No account with that id exists. Please try again.");
 			}
 		}
-			
 		
 		public boolean existsAccount() throws SQLException {
 			String accountExists = "SELECT * FROM CR_ACCOUNTS WHERE accountId =" + accountId;
@@ -107,10 +108,7 @@ public class CheckTransactionListener implements ActionListener {
 			try {
 				ResultSet set = Application.stmt.executeQuery(balanceQuery);
 				if(set.next()) balance = set.getInt(1);
-				if(balance < amountCheck) {
-					
-					// TODO: LOOK AT PROJECT DESCRIPTION FOR WHAT TO DO HERE.
-					
+				if(balance < amountCheck) {					
 					BankTellerUtility.showPopUpMessage("You do not have enough money in your account " + accountId + 
 							" to withdraw " + amountCheck);
 
@@ -127,12 +125,24 @@ public class CheckTransactionListener implements ActionListener {
 					BankTellerUtility.showPopUpMessage("You have written a check for " + amountCheck + ". Your check"
 							+ " number is: " + checkNumber);
 					
+					if(balance - amountCheck <= 0.01) {
+						String closeAccount = "UPDATE CR_ACCOUNTS SET ISCLOSED = 1 WHERE ACCOUNTID = " + accountId;
+						int numRowsUpdated = Application.stmt.executeUpdate(closeAccount);
+						assert(numRowsUpdated == 1);
+						
+						BankTellerUtility.showPopUpMessage("Since your account: " + accountId + " balance was less than or "
+								+ "equal to $0.01, your account was closed.");
+					}
 					
-					int transactionId = (int)(Math.random() * 157);
-					String type = "Write check";
+					int transactionId = BankTellerUtility.getNumberTransactions() + 1;
+					String type = "'Write check'";
+					String check = "checkNumber: " + checkNumber;
 					String transactionsQuery = "INSERT INTO CR_TRANSACTIONS "
-							+ "VALUES( " + transactionId + ", " + type + ", " + ssn + ", " + accountId + ", null, " + amountCheck + ", "
-									+ "'checkNumber: " + checkNumber + "')";
+							+ "VALUES(" + transactionId + ", " + type + ", " + ssn + ", " + accountId + ", null, " + amountCheck + ", "
+									+ "'" + check + "')";
+					System.out.println(transactionsQuery);
+					int numRowsUpdated = Application.stmt.executeUpdate(transactionsQuery);
+					assert(numRowsUpdated == 1);
 					
 					accountNumber.removeAll();
 					checkAmount.removeAll();

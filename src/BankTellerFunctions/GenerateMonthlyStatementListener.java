@@ -1,5 +1,6 @@
 package BankTellerFunctions;
 
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.ResultSet;
@@ -19,6 +20,7 @@ public class GenerateMonthlyStatementListener implements ActionListener {
 	JPanel backPanel;
 	JPanel panel;
 	JButton backButton;
+	JTextField ssn;
 	ArrayList<Integer> accountList;
 
 	GenerateMonthlyStatementListener(JPanel incomingPanel, JPanel incomingBackPanel, JButton incomingButton) {
@@ -30,55 +32,62 @@ public class GenerateMonthlyStatementListener implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
 		System.out.println("monthly statements clicked");
 		
 		BankTellerUtility.setUpBackPanelToBankTeller(backPanel, backButton);
 		
 		panel.removeAll();
 		
-		int enterSSN = Integer.parseInt(JOptionPane.showInputDialog(BankTeller.frame, "Enter Customer's ssn: "));
-
-		// query for all accounts that customer has.
-		String query = "SELECT ACCOUNTID "
-				+ " FROM ACCOUNTSOWNEDBY AO"
-				+ " WHERE AO.SSN = " + enterSSN;
+		JLabel customerSSN = new JLabel("Enter Customer SSN");
+		ssn = new JTextField(20);
 		
-		try {
-			ResultSet accounts = Application.stmt.executeQuery(query);
-			
-			while(accounts.next()) {
-				int id = Integer.parseInt(accounts.getString("accoundId"));
-				
-			}
-			
-			String query2 = "DELETE FROM CR_CUSTOMERS "
-					+ "WHERE CR_CUSTOMERS.SSN NOT IN ( SELECT SSN"
-													+ " FROM CR_ACCOUNTSOWNEDBY )";
-			
-			int numUpdated2 = Application.stmt.executeUpdate(query2);
-			
-			//BankTellerUtility.showPopUpMessage("Deleted " + (numUpdated + numUpdated2) + " rows.");
-			
-			
-			panel.removeAll();
-			BankTellerUtility.setUpBackPanelToBankTeller(backPanel, backButton);
-			
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
+		JButton enter = new JButton("Enter");
+		enter.addActionListener(new EnterListener());
 		
-		// query the transactions table for all transactions with this customer account.
-		// Generate a pop up text view with all the information needed for this report.
-		
+		panel.setLayout(new GridLayout(1,3));
+		panel.add(customerSSN);
+		panel.add(ssn);
+		panel.add(enter);
 		panel.updateUI();
 
 	}
 	
-	// add action listener for text field here.
-	
-	// 
+	private class EnterListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			try{
+				int taxId = Integer.parseInt(ssn.getText());
+				
+				String query = "SELECT ACCOUNTID "
+						+ " FROM ACCOUNTSOWNEDBY AO"
+						+ " WHERE AO.SSN = " + taxId;
+				
+				ResultSet accounts = Application.stmt.executeQuery(query);
+				
+				while(accounts.next()) {
+					int id = Integer.parseInt(accounts.getString("accoundId"));
+					
+				}
+				
+				String query2 = "DELETE FROM CR_CUSTOMERS "
+						+ "WHERE CR_CUSTOMERS.SSN NOT IN ( SELECT SSN"
+														+ " FROM CR_ACCOUNTSOWNEDBY )";
+				
+				int numUpdated2 = Application.stmt.executeUpdate(query2);
+				
+				panel.removeAll();
+				BankTellerUtility.setUpBackPanelToBankTeller(backPanel, backButton);
+
+				
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch(Exception e) {
+				BankTellerUtility.showPopUpMessage("Invalid ssn was entered. SSN must contain only numerical digits");
+			}
+		}
+		
+	}
 	
 }

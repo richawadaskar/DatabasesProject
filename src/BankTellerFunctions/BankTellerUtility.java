@@ -27,4 +27,13 @@ public class BankTellerUtility {
 		ResultSet exists = Application.stmt.executeQuery(customerExists);
 		return exists.next();
 	}
+	
+	public static int getNumberTransactions() throws SQLException {
+		String numTransactions = "SELECT COUNT(TRANSACTIONID) FROM CR_TRANSACTIONS" ;
+		
+		ResultSet exists = Application.stmt.executeQuery(numTransactions);
+		
+		if(exists.next()) return exists.getInt(1);
+		else throw new SQLException();
+	}
 }
