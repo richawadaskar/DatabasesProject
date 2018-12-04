@@ -41,7 +41,7 @@ public class Application {
 		
 		app.setUpUI();
 	
-		ATMOptionUtility.insertIntoCustomerTable();
+		//ATMOptionUtility.insertIntoCustomerTable();
 	}
 	
 	public void setUpDatabaseConnection() {

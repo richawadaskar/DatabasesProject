@@ -23,7 +23,7 @@ public class DeleteClosedAccountsCustomersListener implements ActionListener {
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
+		//TODO: if pocket's parent is deleted, delete pocket too. Also in DELETE TRANSACTIONS.
 		System.out.println("deleting accounts customers clicked");
 		
 		BankTellerUtility.setUpBackPanelToBankTeller(backPanel, backButton);

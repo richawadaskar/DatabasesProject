@@ -139,7 +139,7 @@ public class CheckTransactionListener implements ActionListener {
 					String check = "checkNumber: " + checkNumber;
 					String transactionsQuery = "INSERT INTO CR_TRANSACTIONS "
 							+ "VALUES(" + transactionId + ", " + type + ", " + ssn + ", " + accountId + ", null, " + amountCheck + ", "
-									+ "'" + check + "')";
+									+ "'" + check + "', to_date('" + Application.getDate() + "', 'mm-dd-yyyy'))";
 					System.out.println(transactionsQuery);
 					int numRowsUpdated = Application.stmt.executeUpdate(transactionsQuery);
 					assert(numRowsUpdated == 1);
