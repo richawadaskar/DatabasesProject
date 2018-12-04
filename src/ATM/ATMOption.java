@@ -77,9 +77,9 @@ public class ATMOption {
 		withdrawal.addActionListener(new WithdrawalListener(panel, backPanel, backButtonToATMOption, frame, customerId));
 		purchase.addActionListener(new PurchaseListener(panel, backPanel, backButtonToATMOption, frame, customerId));
 		transfer.addActionListener(new TransferListener(panel, backPanel, backButtonToATMOption, frame, customerId));
-		collect.addActionListener(new CollectListener(panel, backPanel, backButtonToATMOption));
-		wire.addActionListener(new WireListener(panel, backPanel, backButtonToATMOption));
-		payFriend.addActionListener(new PayFriendListener(panel, backPanel, backButtonToATMOption));
+		collect.addActionListener(new CollectListener(panel, backPanel, backButtonToATMOption, frame, customerId));
+		wire.addActionListener(new WireListener(panel, backPanel, backButtonToATMOption, frame, customerId));
+		payFriend.addActionListener(new PayFriendListener(panel, backPanel, backButtonToATMOption, frame, customerId));
 		
 		ATMOptionScreen();
 	}

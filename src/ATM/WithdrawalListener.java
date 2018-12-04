@@ -21,15 +21,17 @@ public class WithdrawalListener implements ActionListener {
 	JPanel panel;
 	JButton backButton;
 	JFrame frame;
+	int ssn;
 	
 	JTextField accountNumber;
 	JTextField withdrawalAmount;
 	
-	WithdrawalListener(JPanel incomingPanel, JPanel incomingBackPanel, JButton incomingButton, JFrame incomingFrame) {
+	WithdrawalListener(JPanel incomingPanel, JPanel incomingBackPanel, JButton incomingButton, JFrame incomingFrame, int customerId) {
 		backPanel = incomingBackPanel;
 		backButton = incomingButton;
 		panel = incomingPanel;
 		frame = incomingFrame;
+		ssn = customerId;
 	}
 	
 	@Override
@@ -82,6 +84,9 @@ public class WithdrawalListener implements ActionListener {
 					    		
 		    			if(ATMOptionUtility.checkEnoughBalance(accountId, amountWithdrawal)) {
 		    				ATMOptionUtility.subtractMoneyToAccountId(accountId, amountWithdrawal);
+		    				ATMOptionUtility.addToTransactionsTable("Withdrawal", ssn, accountId, amountWithdrawal);
+				    		JOptionPane.showMessageDialog(frame, "Withdrawal succeeded.");
+
 		    			} else {
 		    				JOptionPane.showMessageDialog(frame, "You don't have enough to make this transaction.");
 		    			}

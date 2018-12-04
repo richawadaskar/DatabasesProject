@@ -16,6 +16,8 @@ import BankTellerFunctions.BankTellerUtility;
 import DebtsRus.Application;
 
 public class ATMOptionUtility {
+	
+	static String date = "to_date('" + Application.getDate() + "', 'mm-dd-yyyy')";
 
 	public static void setUpBackPanelToBankTeller(JPanel backPanel, JButton backButton){
 		backPanel.removeAll();
@@ -24,31 +26,24 @@ public class ATMOptionUtility {
 	}
 	//transactionId, transactionType, date, customerId, account1Id, amount, otherInformation
 
-	public static void addToTransactionsTable(String transactionType, String date, int ssn, int account1Id, float amount) throws SQLException {
+	public static void addToTransactionsTable(String transactionType, int ssn, int account1Id, float amount) throws SQLException {
 		int transactionId = BankTellerUtility.getNumberTransactions()+1;
 		//int customerId = getCustomerId(name);
 		
 		
 		
 		String addTransaction = "INSERT into CR_TRANSACTIONS values( "
-				+ transactionId + ", '" + transactionType + "', " + ssn + ", " + account1Id + ", null, " + amount + ", null, " + "to_date('" + Application.getDate() + "', 'mm-dd-yyyy'))";
+				+ transactionId + ", '" + transactionType + "', " + ssn + ", " + account1Id + ", null, " + amount + ", null, " + date+ ")";
 		Application.stmt.executeUpdate(addTransaction);
 		
 	}
 	
-	public static void addToTransactionsTable(String transactionType, String date, int ssn, int account1Id, int account2Id, float amount) throws SQLException {
-		int transactionId = BankTellerUtility.getNumberTransactions();
+	public static void addToTransactionsTable(String transactionType, int ssn, int account1Id, int account2Id, float amount) throws SQLException {
+		int transactionId = BankTellerUtility.getNumberTransactions()+1;
 		//int customerId = getCustomerId(name);
 		
 		String addTransaction = "INSERT into CR_TRANSACTIONS values( "
-				+ transactionId + ", "
-				+ transactionType + ", "
-				+ ssn + ", "
-				+ account1Id + ", "
-				+ account2Id + ", "
-				+ amount + ", "
-				+ null + ", "
-				+ date +")";
+				+ transactionId + ", '" + transactionType + "', " + ssn + ", " + account1Id + ", " + account2Id + ", " + amount + ", " + null + ", " + date + ")";
 		Application.stmt.executeUpdate(addTransaction);
 		
 	}

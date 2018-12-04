@@ -85,10 +85,9 @@ public class DepositListener implements ActionListener {
 			    		while(balanceTable.next() ) {
 				    		Float balance = balanceTable.getFloat("balance");
 				    		System.out.println("Initial Money:" + balance);
-				    		String date = "to_date('" + Application.getDate() + "', 'mm-dd-yyy')";
 				    		
-				    		ATMOptionUtility.addToTransactionsTable("Deposit", date, ssn, accountId, amountDeposit);
 				    		ATMOptionUtility.addMoneyToAccountId(accountId, amountDeposit);
+				    		ATMOptionUtility.addToTransactionsTable("Deposit", ssn, accountId, amountDeposit);
 				    		JOptionPane.showMessageDialog(frame, "Deposit succeeded.");
 			    		}
 		    		} else {

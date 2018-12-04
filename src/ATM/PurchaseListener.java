@@ -80,6 +80,8 @@ public class PurchaseListener implements ActionListener {
 						System.out.println("You own paccount");
 						if(ATMOptionUtility.checkEnoughBalance(accountId, amountPurchase)) {
 		    				ATMOptionUtility.subtractMoneyToAccountId(accountId, amountPurchase);
+		    				ATMOptionUtility.addToTransactionsTable("Purchase", ssn, accountId, amountPurchase);
+				    		JOptionPane.showMessageDialog(frame, "Purchase succeeded.");
 		    			} else {
 		    				JOptionPane.showMessageDialog(frame, "You don't have enough to make this transaction.");
 		    			}

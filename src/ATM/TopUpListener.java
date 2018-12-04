@@ -96,6 +96,8 @@ public class TopUpListener implements ActionListener {
 						if(ATMOptionUtility.checkEnoughBalance(fromAccountId, amountTopUp)) {
 							ATMOptionUtility.subtractMoneyToAccountId(fromAccountId, amountTopUp);
 							ATMOptionUtility.addMoneyToAccountId(topUpAccountId, amountTopUp);
+							ATMOptionUtility.addToTransactionsTable("Top-up", ssn, topUpAccountId, fromAccountId, amountTopUp);
+				    		JOptionPane.showMessageDialog(frame, "Top-up succeeded.");
 						} else {
 							JOptionPane.showMessageDialog(frame, "You don't have enough to make this transaction.");
 						}

@@ -80,29 +80,35 @@ public class TransferListener implements ActionListener {
 			String findAccount = "SELECT accountId FROM CR_ACCOUNTSOWNEDBY WHERE accountId = " + fromAccountId + " AND ssn = " + ssn;
 			String toAccount = "SELECT accountId FROM CR_ACCOUNTSOWNEDBY WHERE accountId = " + toAccountId + " AND ssn = " + ssn;
 
-			try {
-				ResultSet faccount = Application.stmt.executeQuery(findAccount);
-				if(faccount.next()) {
-					System.out.println("You own fromAccount");
-				} else {
-					JOptionPane.showMessageDialog(frame, "You don't own this account for money transfer.(from)");
-				}
-				ResultSet taccount = Application.stmt.executeQuery(toAccount);
-				if(taccount.next()) {
-					System.out.println("You own toAccount");
-					if(ATMOptionUtility.checkEnoughBalance(fromAccountId, amountTransfer)) {
-						ATMOptionUtility.subtractMoneyToAccountId(fromAccountId, amountTransfer);
-						ATMOptionUtility.addMoneyToAccountId(toAccountId, amountTransfer);
+			if(!ATMOptionUtility.checkIfAccountIsPocket(fromAccountId) && !ATMOptionUtility.checkIfAccountIsPocket(toAccountId)) {
+				try {
+					ResultSet faccount = Application.stmt.executeQuery(findAccount);
+					if(faccount.next()) {
+						System.out.println("You own fromAccount");
 					} else {
-						JOptionPane.showMessageDialog(frame, "You don't have enough to make this transaction.");
+						JOptionPane.showMessageDialog(frame, "You don't own this account for money transfer.(from)");
 					}
-				} else {
-					JOptionPane.showMessageDialog(frame, "You don't own this account for money transfer.(to)");
+					ResultSet taccount = Application.stmt.executeQuery(toAccount);
+					if(taccount.next()) {
+						System.out.println("You own toAccount");
+						if(ATMOptionUtility.checkEnoughBalance(fromAccountId, amountTransfer)) {
+							ATMOptionUtility.subtractMoneyToAccountId(fromAccountId, amountTransfer);
+							ATMOptionUtility.addMoneyToAccountId(toAccountId, amountTransfer);
+							ATMOptionUtility.addToTransactionsTable("Transfer", ssn, fromAccountId, toAccountId, amountTransfer);
+				    		JOptionPane.showMessageDialog(frame, "Transfer succeeded.");
+						} else {
+							JOptionPane.showMessageDialog(frame, "You don't have enough to make this transaction.");
+						}
+					} else {
+						JOptionPane.showMessageDialog(frame, "You don't own this account for money transfer.(to)");
+					}
+	
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 				}
-
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+			} else {
+				JOptionPane.showMessageDialog(frame, "Account entered is a pocket. Can't perform transfer.");
 			}
 			
 			//check if fromAccount and toAccount have at least one owner in common
