@@ -201,9 +201,12 @@ public class ATMOptionUtility {
 
 		//String addCustomer1 = "INSERT INTO CR_CUSTOMER VALUES (400651982, 'Pit Wilson', '911 State St', 1821)";
 		Application.stmt.executeUpdate(addAccount);
+
+		addToTransactionsTable("Deposit", primaryOwnerSSN, accountId, initialMonthlyBalance);
 	}
 
 	public static void addToPocketAccountTable(int pocketAccountId, int linkedAccount) throws SQLException {
+
 		String addPocket = "INSERT into CR_POCKET values( "
 				+ pocketAccountId + ", "+ linkedAccount + ")";
 
@@ -242,6 +245,7 @@ public class ATMOptionUtility {
 		}
 		return ssn;
 	}
+
 	
 	public static boolean checkEnoughBalance(int accountId, float amount) {
 		
@@ -376,6 +380,7 @@ public class ATMOptionUtility {
 			int pocketAccountId = Integer.parseInt(lineParts[0]);
 			if(!BankTellerUtility.existsPocketAccount(pocketAccountId)) {
 				int linkedAccount = Integer.parseInt(lineParts[1]);
+
 				ATMOptionUtility.addToPocketAccountTable(pocketAccountId, linkedAccount);
 
 			}

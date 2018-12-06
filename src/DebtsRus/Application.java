@@ -57,7 +57,7 @@ public class Application {
 		
 		app.setUpUI();
 	
-//		ATMOptionUtility.insertIntoCustomerTable();
+		ATMOptionUtility.insertIntoCustomerTable();
 		ATMOptionUtility.insertIntoAccountsTable();
 		ATMOptionUtility.insertIntoPocketAccountsTable();
 		ATMOptionUtility.insertIntoOwnedTable();
