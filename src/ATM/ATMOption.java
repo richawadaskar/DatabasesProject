@@ -149,14 +149,19 @@ public class ATMOption {
 			// TODO Auto-generated method stub
 
 			String oldPin = JOptionPane.showInputDialog(frame, "What's your old PIN?");
-			if(ATMOptionUtility.checkCredentials(oldPin)) {
+			if(isItYours(Integer.parseInt(oldPin), customerId)) {
 				String newPin = JOptionPane.showInputDialog(frame, "Enter new PIN:");
 				ATMOptionUtility.setPin(frame, Integer.parseInt(oldPin), Integer.parseInt(newPin));
 			} else {
-				JOptionPane.showMessageDialog(frame, "PIN does not exisit.");
+				JOptionPane.showMessageDialog(frame, "Not your PIN. Cannot reset.");
 			}
 
 		}
+	}
+
+	public boolean isItYours(int input, int pin) {
+		if(input == pin) return true;
+		return false;
 	}
 	    
 }

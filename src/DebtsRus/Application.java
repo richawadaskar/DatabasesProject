@@ -46,7 +46,7 @@ public class Application {
 	
 	
 	//static public Date date = new Date();
-	static public Date date = new Date(12-04-2018);
+	static public Date date = new Date();
 	public static final String[] accountTypes = { "Student-Checking", "Interest-Checking", "Savings", "Pocket" };
 
 
@@ -151,6 +151,7 @@ public class Application {
 	// TODO: Add button to main page of application that lets you change the date
 	public static void setDate(Date newDate) {
 		Application.date = newDate;
+		System.out.println(Application.getDate());
 		
 		if(lastDayOfMonth(newDate)) {
 			// accrue interest.  aka call addinterestlistener     dfvsdfsjd

@@ -85,6 +85,7 @@ public class ATM {
         @Override
         public void actionPerformed(ActionEvent e) {
             checkCredentials(new String(pinField.getPassword()));
+			System.out.println(Application.getDate());
         }
 
     }

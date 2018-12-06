@@ -35,7 +35,9 @@ public class DepositListener implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 
 		System.out.println("Deposit clicked");
-		
+		System.out.println(Application.getDate());
+
+
 		ATMOptionUtility.setUpBackPanelToBankTeller(backPanel, backButton);
 		
 		panel.removeAll();

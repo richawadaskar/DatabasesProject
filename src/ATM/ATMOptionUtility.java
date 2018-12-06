@@ -160,6 +160,8 @@ public class ATMOptionUtility {
 	//transactionId, transactionType, date, customerId, account1Id, amount, otherInformation
 
 	public static void addToTransactionsTable(String transactionType, int ssn, int account1Id, float amount) throws SQLException {
+		System.out.println(Application.getDate());
+
 		int transactionId = BankTellerUtility.getNumberTransactions()+1;
 		//int customerId = getCustomerId(name);
 		
@@ -243,7 +245,7 @@ public class ATMOptionUtility {
 	
 	public static boolean checkEnoughBalance(int accountId, float amount) {
 		
-		if(getBalanceFromAccountId(accountId) - amount > 0) 
+		if(getBalanceFromAccountId(accountId) - amount >= 0)
 			return true;
 		
 			return false;
