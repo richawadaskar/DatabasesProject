@@ -18,7 +18,7 @@ public class BankTellerUtility {
 	}
 	
 	public static void showPopUpMessage(String str) {
-		JOptionPane.showMessageDialog(BankTeller.frame, str);	
+		JOptionPane.showMessageDialog(BankTeller.frame, str);
 	}
 	
 	public static boolean existsCustomer(int customerSSN) throws SQLException {

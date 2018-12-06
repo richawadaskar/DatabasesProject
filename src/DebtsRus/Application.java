@@ -42,8 +42,7 @@ public class Application {
 	static Application app = null;
 	public ATM atm;
 	
-	//static public Date date = new Date();
-	static public Date date = new Date(12-04-2018);
+	static public Date date = new Date();
 	 
 	public static void main(String[] args) throws SQLException, IOException {
 		app = new Application();
@@ -52,6 +51,7 @@ public class Application {
 		
 		app.setUpUI();
 	
+		date = new Date();
 		//ATMOptionUtility.insertIntoCustomerTable();
 	}
 	
