@@ -6,12 +6,7 @@ import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 import DebtsRus.*;
 
@@ -22,9 +17,9 @@ public class TransferListener implements ActionListener {
 	JButton backButton;
 	JFrame frame;
 	int ssn;
-	
-	JTextField fromAccount;
-	JTextField toAccount;
+
+	JComboBox fromAccount;
+	JComboBox toAccount;
 	JTextField transferAmount;
 	
 	TransferListener(JPanel incomingPanel, JPanel incomingBackPanel, JButton incomingButton, JFrame incomingFrame, int customerId) {
@@ -44,10 +39,10 @@ public class TransferListener implements ActionListener {
 		panel.removeAll();
 		
 		JLabel fromAccountNumberLabel = new JLabel("Enter From Account Number: ");
-		fromAccount = new JTextField(20);
+		fromAccount = new JComboBox(ATMOptionUtility.findAllCheckingSavingAccountNumbers(ssn).toArray());
 		
 		JLabel toAccountNumberLabel = new JLabel("Enter To Account Number: ");
-		toAccount = new JTextField(20);
+		toAccount = new JComboBox(ATMOptionUtility.findAllCheckingSavingAccountNumbers(ssn).toArray());
 		
 		JLabel transferAmountLabel = new JLabel("Enter Amount to Transfer: ");
 		transferAmount = new JTextField(20);
@@ -72,48 +67,29 @@ public class TransferListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
-			int fromAccountId = Integer.parseInt(fromAccount.getText());
-			int toAccountId = Integer.parseInt(toAccount.getText());
+			int fromAccountId = Integer.parseInt(fromAccount.getSelectedItem().toString());
+			int toAccountId = Integer.parseInt(toAccount.getSelectedItem().toString());
 			float amountTransfer = Float.parseFloat(transferAmount.getText());
-			
-			//check if fromAccount  owned by ssn
-			String findAccount = "SELECT accountId FROM CR_ACCOUNTSOWNEDBY WHERE accountId = " + fromAccountId + " AND ssn = " + ssn;
-			String toAccount = "SELECT accountId FROM CR_ACCOUNTSOWNEDBY WHERE accountId = " + toAccountId + " AND ssn = " + ssn;
 
-			if(!ATMOptionUtility.checkIfAccountIsPocket(fromAccountId) && !ATMOptionUtility.checkIfAccountIsPocket(toAccountId)) {
+			if (fromAccountId == toAccountId) {
+				JOptionPane.showMessageDialog(frame, "Illegal transfer. Cannot pick two same accounts.");
+			} else if (amountTransfer > 2000){
+				JOptionPane.showMessageDialog(frame, "Illegal transfer. Cannot transfer more than $2000.");
+			} else {
 				try {
-					ResultSet faccount = Application.stmt.executeQuery(findAccount);
-					if(faccount.next()) {
-						System.out.println("You own fromAccount");
+					if (ATMOptionUtility.checkEnoughBalance(fromAccountId, amountTransfer)) {
+						ATMOptionUtility.subtractMoneyToAccountId(fromAccountId, amountTransfer);
+						ATMOptionUtility.addMoneyToAccountId(toAccountId, amountTransfer);
+						ATMOptionUtility.addToTransactionsTable("Transfer", ssn, fromAccountId, toAccountId, amountTransfer);
+						JOptionPane.showMessageDialog(frame, "Transfer succeeded.");
 					} else {
-						JOptionPane.showMessageDialog(frame, "You don't own this account for money transfer.(from)");
+						JOptionPane.showMessageDialog(frame, "You don't have enough to make this transaction.");
 					}
-					ResultSet taccount = Application.stmt.executeQuery(toAccount);
-					if(taccount.next()) {
-						System.out.println("You own toAccount");
-						if(ATMOptionUtility.checkEnoughBalance(fromAccountId, amountTransfer)) {
-							ATMOptionUtility.subtractMoneyToAccountId(fromAccountId, amountTransfer);
-							ATMOptionUtility.addMoneyToAccountId(toAccountId, amountTransfer);
-							ATMOptionUtility.addToTransactionsTable("Transfer", ssn, fromAccountId, toAccountId, amountTransfer);
-				    		JOptionPane.showMessageDialog(frame, "Transfer succeeded.");
-						} else {
-							JOptionPane.showMessageDialog(frame, "You don't have enough to make this transaction.");
-						}
-					} else {
-						JOptionPane.showMessageDialog(frame, "You don't own this account for money transfer.(to)");
-					}
-	
 				} catch (SQLException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-			} else {
-				JOptionPane.showMessageDialog(frame, "Account entered is a pocket. Can't perform transfer.");
 			}
-			
-			//check if fromAccount and toAccount have at least one owner in common
-			
-			//if yes, proceed with transaction
 		}
 		
 		

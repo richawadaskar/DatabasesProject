@@ -7,12 +7,7 @@ import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 import DebtsRus.Application;
 
@@ -23,9 +18,9 @@ public class PayFriendListener implements ActionListener {
 	JButton backButton;
 	JFrame frame;
 	int ssn;
-	
-	JTextField fromAccount;
-	JTextField toAccount;
+
+	JComboBox fromAccount;
+	JComboBox toAccount;
 	JTextField payFriendAmount;
 	
 	PayFriendListener(JPanel incomingPanel, JPanel incomingBackPanel, JButton incomingButton,  JFrame incomingFrame, int customerId) {
@@ -45,10 +40,10 @@ public class PayFriendListener implements ActionListener {
 		panel.removeAll();
 		
 		JLabel fromAccountNumberLabel = new JLabel("Enter From Pocket Account Number: ");
-		fromAccount = new JTextField(20);
+		fromAccount = new JComboBox(ATMOptionUtility.findAllPocketAccountNumbers(ssn).toArray());
 		
 		JLabel toAccountNumberLabel = new JLabel("Enter To Pocket Account Number: ");
-		toAccount = new JTextField(20);
+		toAccount = new JComboBox(ATMOptionUtility.findAllPocketAccountNumbers().toArray());
 		
 		JLabel payFriendAmountLabel = new JLabel("Enter Amount to Pay Friend: ");
 		payFriendAmount = new JTextField(20);
@@ -72,36 +67,24 @@ public class PayFriendListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
-			int fromAccountId = Integer.parseInt(fromAccount.getText());
-			int toAccountId = Integer.parseInt(toAccount.getText());
+			int fromAccountId = Integer.parseInt(fromAccount.getSelectedItem().toString());
+			int toAccountId = Integer.parseInt(toAccount.getSelectedItem().toString());
 			float amountPayFriend = Float.parseFloat(payFriendAmount.getText());
-			
-			//check if fromAccount  owned by ssn
-			if(ATMOptionUtility.checkIfAccountIsPocket(fromAccountId) && ATMOptionUtility.checkIfAccountIsPocket(toAccountId)) {
-				String findAccount = "SELECT accountId FROM CR_ACCOUNTSOWNEDBY WHERE accountId = " + fromAccountId + " AND ssn = " + ssn;
-				try {
-					ResultSet paccount = Application.stmt.executeQuery(findAccount);
-					if(paccount.next()) {
-						System.out.println("You own paccount");
-						if(ATMOptionUtility.checkEnoughBalance(fromAccountId, amountPayFriend)) {
-							ATMOptionUtility.subtractMoneyToAccountId(fromAccountId, amountPayFriend);
-							ATMOptionUtility.addMoneyToAccountId(toAccountId, amountPayFriend);
-							ATMOptionUtility.addToTransactionsTable("Pay-Friend", ssn, fromAccountId, toAccountId, amountPayFriend);
-				    		JOptionPane.showMessageDialog(frame, "Pay-Friend succeeded.");
-						} else {
-							JOptionPane.showMessageDialog(frame, "You don't have enough to make this transaction.");
-						}
-					} else {
-						JOptionPane.showMessageDialog(frame, "You don't own this account.");
-					}
-				} catch (SQLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+
+			try {
+				if(ATMOptionUtility.checkEnoughBalance(fromAccountId, amountPayFriend)) {
+					ATMOptionUtility.subtractMoneyToAccountId(fromAccountId, amountPayFriend);
+					ATMOptionUtility.addMoneyToAccountId(toAccountId, amountPayFriend);
+					ATMOptionUtility.addToTransactionsTable("Pay-Friend", ssn, fromAccountId, toAccountId, amountPayFriend);
+					JOptionPane.showMessageDialog(frame, "Pay-Friend succeeded.");
+				} else {
+					JOptionPane.showMessageDialog(frame, "You don't have enough to make this transaction.");
 				}
-				
-			} else {
-				JOptionPane.showMessageDialog(frame, "One or both of these accounts aren't a pocket");
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
+
 		}
 
 	}

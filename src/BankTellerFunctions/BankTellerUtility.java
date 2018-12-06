@@ -41,8 +41,8 @@ public class BankTellerUtility {
 		return exists.next();
 	}
 
-	public static boolean existsOwnedBy(int accountId) throws SQLException {
-		String customerExists = "SELECT * FROM CR_ACCOUNTSOWNEDBY WHERE accountId =" + accountId;
+	public static boolean existsOwnedBy(int accountId, int ssn) throws SQLException {
+		String customerExists = "SELECT * FROM CR_ACCOUNTSOWNEDBY WHERE accountId =" + accountId + " AND ssn = " + ssn;
 
 		ResultSet exists = Application.stmt.executeQuery(customerExists);
 		return exists.next();

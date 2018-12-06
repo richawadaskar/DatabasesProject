@@ -21,7 +21,10 @@ public class TopUpListener implements ActionListener {
 	JComboBox topUpAccountNumber;
 	JLabel fromAccount;
 	JTextField topUpAmount;
-	
+
+	int topUpAccountId;
+	int fromAccountId;
+
 	TopUpListener(JPanel incomingPanel, JPanel incomingBackPanel, JButton incomingButton, JFrame incomingFrame, int customerId) {
 		backPanel = incomingBackPanel;
 		backButton = incomingButton;
@@ -43,8 +46,8 @@ public class TopUpListener implements ActionListener {
 		topUpAccountNumber = new JComboBox(ATMOptionUtility.findAllPocketAccountNumbers(ssn).toArray());
 
 		JLabel fromAccountNumberLabel = new JLabel("To-Up money From Linked Account : ");
-		fromAccount = new JLabel();
-		
+		fromAccount = new JLabel("pending");
+
 		JLabel topUpAmountLabel = new JLabel("Enter Amount to Top Up: ");
 		topUpAmount = new JTextField(20);
 		
@@ -65,6 +68,11 @@ public class TopUpListener implements ActionListener {
 		if(ATMOptionUtility.findAllPocketAccountNumbers(ssn).size() == 0)  {
 			JOptionPane.showMessageDialog(frame, "You don't have a pocket account.");
 		}
+
+		topUpAccountId = Integer.parseInt(topUpAccountNumber.getSelectedItem().toString());
+		fromAccountId = ATMOptionUtility.getLinkedAccount(topUpAccountId);
+		fromAccount.setText(Integer.toString(fromAccountId));
+
 	}
 	
 	private class EnterListener implements ActionListener {
@@ -72,9 +80,7 @@ public class TopUpListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
-			int topUpAccountId = Integer.parseInt(topUpAccountNumber.getSelectedItem().toString());
-			int fromAccountId = ATMOptionUtility.getLinkedAccount(topUpAccountId);
-			fromAccount.setText(Integer.toString(fromAccountId));
+
 			float amountTopUp = Float.parseFloat(topUpAmount.getText());
 
 			try {

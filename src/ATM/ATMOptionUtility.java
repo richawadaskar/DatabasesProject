@@ -63,12 +63,51 @@ public class ATMOptionUtility {
 	public static List<Integer> findAllAccountNumbers(int ssn) {
 		List<Integer> accountNumbers = new ArrayList<>();
 		String customerExists = "SELECT AO.accountId FROM CR_ACCOUNTSOWNEDBY AO WHERE AO.ssn = " + ssn +
-				"INTERSECT SELECT A.accountId FROM CR_ACCOUNTS A WHERE A.isCLosed = 0";
+				"UNOIN SELECT A.accountId FROM CR_ACCOUNTS A WHERE A.isCLosed = 0";
 
 		try {
 			ResultSet exists = Application.stmt.executeQuery(customerExists);
 			while (exists.next()) {
 				int accountId = exists.getInt("accountId");
+				accountNumbers.add(accountId);
+			}
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return accountNumbers;
+
+	}
+
+	public static List<Integer> findAllCheckingSavingAccountNumbers(int ssn) {
+		List<Integer> accountNumbers = new ArrayList<>();
+		String customerExists = "SELECT AO.accountId FROM CR_ACCOUNTSOWNEDBY AO WHERE AO.ssn = " + ssn +
+				"AND AO.accountId IN (SELECT A.accountId FROM CR_ACCOUNTS A WHERE A.isCLosed = 0 " +
+				"AND A.accountType = 'Student-Checking' OR A.accountType = 'Interest-Checking' OR A.accountType = 'Savings')";
+		//String customerExists1 = "SELECT AO.accountId FROM CR_ACCOUNTSOWNEDBY AO WHERE AO.ssn = " + ssn;
+
+		try {
+			ResultSet exists = Application.stmt.executeQuery(customerExists);
+			while (exists.next()) {
+				int accountId = exists.getInt("accountId");
+				accountNumbers.add(accountId);
+			}
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return accountNumbers;
+
+	}
+
+	public static List<Integer> findAllCheckingSavingAccountNumbers() {
+		List<Integer> accountNumbers = new ArrayList<>();
+		String csExists = "SELECT A.accountId FROM CR_ACCOUNTS A WHERE A.isCLosed = 0 " +
+				"A.accountType = 'Student-Checking' OR A.accountType = 'Interest-Checking' OR A.accountType = 'Savings'";
+		//String customerExists1 = "SELECT AO.accountId FROM CR_ACCOUNTSOWNEDBY AO WHERE AO.ssn = " + ssn;
+
+		try {
+			ResultSet exists1 = Application.stmt.executeQuery(csExists);
+			while (exists1.next()) {
+				int accountId = exists1.getInt("accountId");
 				accountNumbers.add(accountId);
 			}
 		} catch(SQLException e) {
@@ -80,10 +119,10 @@ public class ATMOptionUtility {
 
 	public static List<Integer> findAllPocketAccountNumbers(int ssn) {
 		List<Integer> accountNumbers = new ArrayList<>();
-		String customerExists = "SELECT O.accountId FROM CR_ACCOUNTSOWNEDBY O WHERE O.ssn = " + ssn +
-				"INTERSECT SELECT A.accountId FROM CR_POCKET A WHERE A.isCLosed = 0 AND A.accountType = 'Pocket'";
+		String pocketExists = "SELECT O.accountId FROM CR_ACCOUNTSOWNEDBY O WHERE O.ssn = " + ssn +
+				"INTERSECT SELECT A.accountId FROM CR_ACCOUNTS A WHERE A.isCLosed = 0 AND A.accountType = 'Pocket'";
 		try {
-			ResultSet exists = Application.stmt.executeQuery(customerExists);
+			ResultSet exists = Application.stmt.executeQuery(pocketExists);
 			while (exists.next()) {
 				int accountId = exists.getInt("accountId");
 				accountNumbers.add(accountId);
@@ -94,6 +133,23 @@ public class ATMOptionUtility {
 		return accountNumbers;
 
 	}
+	public static List<Integer> findAllPocketAccountNumbers() {
+		List<Integer> accountNumbers = new ArrayList<>();
+		String allPocket = "SELECT accountId FROM CR_POCKET WHERE " +
+				"accountId IN (SELECT A.accountId FROM CR_ACCOUNTS A WHERE A.isClosed = 0)";
+		try {
+			ResultSet exists1 = Application.stmt.executeQuery(allPocket);
+			while (exists1.next()) {
+				int accountId = exists1.getInt("accountId");
+				accountNumbers.add(accountId);
+			}
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return accountNumbers;
+
+	}
+
 
 
 	public static void setUpBackPanelToBankTeller(JPanel backPanel, JButton backButton){
@@ -120,7 +176,7 @@ public class ATMOptionUtility {
 		//int customerId = getCustomerId(name);
 		
 		String addTransaction = "INSERT into CR_TRANSACTIONS values( "
-				+ transactionId + ", '" + transactionType + "', " + ", " + date + ssn + ", " + account1Id + ", " + account2Id + ", " + amount + ", " + null + ")";
+				+ transactionId + ", '" + transactionType + "', " + date + ", " + ssn + ", " + account1Id + ", " + account2Id + ", " + amount + ", " + null + ")";
 		Application.stmt.executeUpdate(addTransaction);
 		
 	}
@@ -338,8 +394,8 @@ public class ATMOptionUtility {
 			}
 			System.out.println();
 			int accountId = Integer.parseInt(lineParts[0]);
-			if(!BankTellerUtility.existsOwnedBy(accountId)) {
-				int ownedBy = Integer.parseInt(lineParts[1]);
+			int ownedBy = Integer.parseInt(lineParts[1]);
+			if(!BankTellerUtility.existsOwnedBy(accountId, ownedBy)) {
 				int isPrimaryOwner = Integer.parseInt(lineParts[2]);
 				ATMOptionUtility.addToOwnedByTable(accountId, ownedBy, isPrimaryOwner);
 

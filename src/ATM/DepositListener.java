@@ -41,7 +41,7 @@ public class DepositListener implements ActionListener {
 		panel.removeAll();
 		
 		JLabel accountNumberLabel = new JLabel("Enter Account Number: ");
-		accountNumber = new JComboBox(ATMOptionUtility.findAllAccountNumbers(ssn).toArray());
+		accountNumber = new JComboBox(ATMOptionUtility.findAllCheckingSavingAccountNumbers(ssn).toArray());
 		
 		JLabel depositAmountLabel = new JLabel("Enter Amount for Deposit: ");
 		depositAmount = new JTextField(20);
@@ -68,41 +68,25 @@ public class DepositListener implements ActionListener {
 			float amountDeposit = Float.parseFloat(depositAmount.getText());
 			
 			// check if account exists and that its type is either checking or saving
-			String accountExists = "SELECT accountType FROM CR_ACCOUNTS WHERE accountId =" + accountId;
+			String getBalance = "SELECT balance FROM CR_ACCOUNTS WHERE accountId =" + accountId;
 			try {
-				ResultSet tables1 = Application.stmt.executeQuery(accountExists);
-				while(tables1.next()) {
-					String accountType = tables1.getString("accountType");
-
-					//if account type is NOT pocket
-					if (!accountType.toLowerCase().equals("pocket")) {
-
-						String getBalance = "SELECT balance FROM CR_ACCOUNTS WHERE accountId =" + accountId;
-						ResultSet balanceTable = Application.stmt.executeQuery(getBalance);
-						while (balanceTable.next()) {
-							Float balance = balanceTable.getFloat("balance");
-							System.out.println("Initial Money:" + balance);
-
-							ATMOptionUtility.addMoneyToAccountId(accountId, amountDeposit);
-							ATMOptionUtility.addToTransactionsTable("Deposit", ssn, accountId, amountDeposit);
-							JOptionPane.showMessageDialog(frame, "Deposit succeeded.");
-						}
-					} else {
-						JOptionPane.showMessageDialog(frame, "Tis is a pocket account. Cannot deposit.");
-					}
+				ResultSet balanceTable = Application.stmt.executeQuery(getBalance);
+				while (balanceTable.next()) {
+					Float balance = balanceTable.getFloat("balance");
+					System.out.println("Initial Money:" + balance);
+					ATMOptionUtility.addMoneyToAccountId(accountId, amountDeposit);
+					ATMOptionUtility.addToTransactionsTable("Deposit", ssn, accountId, amountDeposit);
+					JOptionPane.showMessageDialog(frame, "Deposit succeeded.");
 				}
 
-		    	String getBalance = "SELECT balance FROM CR_ACCOUNTS WHERE accountId =" + accountId;
-	    		ResultSet balanceTable = Application.stmt.executeQuery(getBalance);
-	    		while(balanceTable.next() ) {
-		    		Float balance = balanceTable.getFloat("balance");
-		    		System.out.println("After Money:" + balance);
-	    		}
-
-			} catch (SQLException error) {
-				error.printStackTrace();
+				ResultSet balanceTable2 = Application.stmt.executeQuery(getBalance);
+				while (balanceTable2.next()) {
+					Float balance = balanceTable2.getFloat("balance");
+					System.out.println("After Money:" + balance);
+				}
+			} catch(SQLException e2) {
+				e2.printStackTrace();
 			}
-
 		}
 		
 	}

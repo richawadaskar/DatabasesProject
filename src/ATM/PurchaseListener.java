@@ -6,12 +6,7 @@ import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 import DebtsRus.Application;
 
@@ -23,8 +18,8 @@ public class PurchaseListener implements ActionListener {
 	JButton backButton;
 	JFrame frame;
 	int ssn;
-	
-	JTextField accountNumber;
+
+	JComboBox accountNumber;
 	JTextField purchaseAmount;
 	
 	PurchaseListener(JPanel incomingPanel, JPanel incomingBackPanel, JButton incomingButton, JFrame incomingFrame, int customerId) {
@@ -45,7 +40,7 @@ public class PurchaseListener implements ActionListener {
 		panel.removeAll();
 		
 		JLabel accountNumberLabel = new JLabel("Enter Pocket Account Number: ");
-		accountNumber = new JTextField(20);
+		accountNumber = new JComboBox(ATMOptionUtility.findAllPocketAccountNumbers(ssn).toArray());
 		
 		JLabel purchaseAmountLabel = new JLabel("Enter Amount for Purchase: ");
 		purchaseAmount = new JTextField(20);
@@ -68,33 +63,21 @@ public class PurchaseListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
-			int accountId = Integer.parseInt(accountNumber.getText());
+			int accountId = Integer.parseInt(accountNumber.getSelectedItem().toString());
 			float amountPurchase = Float.parseFloat(purchaseAmount.getText());
 			
 			// check if account exists and that its type a pocket
-			if(ATMOptionUtility.checkIfAccountIsPocket(accountId)) {
-				String pocketAccount = "SELECT accountId FROM CR_ACCOUNTSOWNEDBY WHERE accountId = " + accountId + " AND ssn = " + ssn;
-				try {
-					ResultSet paccount = Application.stmt.executeQuery(pocketAccount);
-					if(paccount.next()) {
-						System.out.println("You own paccount");
-						if(ATMOptionUtility.checkEnoughBalance(accountId, amountPurchase)) {
-		    				ATMOptionUtility.subtractMoneyToAccountId(accountId, amountPurchase);
-		    				ATMOptionUtility.addToTransactionsTable("Purchase", ssn, accountId, amountPurchase);
-				    		JOptionPane.showMessageDialog(frame, "Purchase succeeded.");
-		    			} else {
-		    				JOptionPane.showMessageDialog(frame, "You don't have enough to make this transaction.");
-		    			}
-					} else {
-						JOptionPane.showMessageDialog(frame, "You don't own this account.");
-					}
-				} catch (SQLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+			try {
+				if(ATMOptionUtility.checkEnoughBalance(accountId, amountPurchase)) {
+					ATMOptionUtility.subtractMoneyToAccountId(accountId, amountPurchase);
+					ATMOptionUtility.addToTransactionsTable("Purchase", ssn, accountId, amountPurchase);
+					JOptionPane.showMessageDialog(frame, "Purchase succeeded.");
+				} else {
+					JOptionPane.showMessageDialog(frame, "You don't have enough to make this transaction.");
 				}
-				
-			} else {
-				JOptionPane.showMessageDialog(frame, "This account isn't a pocket");
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
 		}
 		

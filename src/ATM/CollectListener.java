@@ -6,12 +6,7 @@ import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 import DebtsRus.Application;
 
@@ -24,8 +19,7 @@ public class CollectListener implements ActionListener {
 	JFrame frame;
 	int ssn;
 	
-	JTextField fromPocketAccount;
-	JTextField toParentAccount;
+	JComboBox fromPocketAccount;
 	JTextField collectAmount;
 	
 	CollectListener(JPanel incomingPanel, JPanel incomingBackPanel, JButton incomingButton, JFrame incomingFrame, int customerId) {
@@ -46,10 +40,7 @@ public class CollectListener implements ActionListener {
 		panel.removeAll();
 		
 		JLabel fromPocketAccountNumberLabel = new JLabel("Enter From Pocket Account Number: ");
-		fromPocketAccount = new JTextField(20);
-		
-		JLabel toParentAccountNumberLabel = new JLabel("Enter To Parent Account Number: ");
-		toParentAccount = new JTextField(20);
+		fromPocketAccount = new JComboBox(ATMOptionUtility.findAllPocketAccountNumbers(ssn).toArray());
 		
 		JLabel collectAmountLabel = new JLabel("Enter Amount to Collect: ");
 		collectAmount = new JTextField(20);
@@ -60,8 +51,6 @@ public class CollectListener implements ActionListener {
 		panel.setLayout(new GridLayout(4,3));
 		panel.add(fromPocketAccountNumberLabel);
 		panel.add(fromPocketAccount);
-		panel.add(toParentAccountNumberLabel);
-		panel.add(toParentAccount);
 		panel.add(collectAmountLabel);
 		panel.add(collectAmount);
 		panel.add(enter);
@@ -74,43 +63,25 @@ public class CollectListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
-			int pocketAccountId = Integer.parseInt(fromPocketAccount.getText());
-			int parentAccountId = Integer.parseInt(toParentAccount.getText());
+			int pocketAccountId = Integer.parseInt(fromPocketAccount.getSelectedItem().toString());
+			int parentAccountId = ATMOptionUtility.getLinkedAccount(pocketAccountId);
 			float amountCollect = Float.parseFloat(collectAmount.getText());
-			
-			// check if account exists and that its type a pocket
-			if(ATMOptionUtility.checkIfAccountIsPocket(pocketAccountId)) {
-				String pocketAccount = "SELECT accountId FROM CR_ACCOUNTSOWNEDBY WHERE accountId = " + pocketAccountId + " AND ssn = " + ssn;
-				String fromAccount = "SELECT accountId FROM CR_ACCOUNTSOWNEDBY WHERE accountId = " + parentAccountId + " AND ssn = " + ssn;
-				try {
-					ResultSet paccount = Application.stmt.executeQuery(pocketAccount);
-					if(paccount.next()) {
-						System.out.println("You own pocket account");
-					} else {
-						JOptionPane.showMessageDialog(frame, "You don't own this account.");
-					}
-					ResultSet faccount = Application.stmt.executeQuery(fromAccount);
-					if(faccount.next()) {
-						System.out.println("You own parent Account");
-						if(ATMOptionUtility.checkEnoughBalance(pocketAccountId, amountCollect)) {
-							ATMOptionUtility.subtractMoneyToAccountId(pocketAccountId, amountCollect);
-							ATMOptionUtility.addMoneyToAccountId(parentAccountId, (float)(amountCollect*0.97));
-							ATMOptionUtility.addToTransactionsTable("Top-up", ssn, pocketAccountId, parentAccountId, amountCollect);
-				    		JOptionPane.showMessageDialog(frame, "Collect succeeded.");
-						} else {
-							JOptionPane.showMessageDialog(frame, "You don't have enough to make this transaction.");
-						}
-					} else {
-						JOptionPane.showMessageDialog(frame, "You don't own this account for money transfer.(to)");
-					}
-	
-				} catch (SQLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+
+			try {
+				if(ATMOptionUtility.checkEnoughBalance(pocketAccountId, amountCollect)) {
+					ATMOptionUtility.subtractMoneyToAccountId(pocketAccountId, amountCollect);
+					ATMOptionUtility.addMoneyToAccountId(parentAccountId, (float)(amountCollect*0.97));
+					ATMOptionUtility.addToTransactionsTable("Collect", ssn, pocketAccountId, parentAccountId, amountCollect);
+					JOptionPane.showMessageDialog(frame, "Collect succeeded.");
+				} else {
+					JOptionPane.showMessageDialog(frame, "You don't have enough to make this transaction.");
 				}
-			} else {
-				JOptionPane.showMessageDialog(frame, "This account isn't a pocket");
+
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
+
 		}
 		
 	}
