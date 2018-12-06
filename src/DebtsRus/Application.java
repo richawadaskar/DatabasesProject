@@ -17,6 +17,7 @@ import ATM.*;
 
 import javax.swing.*;
 
+import com.sun.codemodel.internal.fmt.JBinaryFile;
 import org.jdatepicker.impl.DateComponentFormatter;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
@@ -31,6 +32,7 @@ public class Application {
 
 	static JButton ATM;
 	static JButton BankTeller;
+	static JButton setInterest;
 	static JPanel panel;
 	static JPanel emptyPanel;
 	static JFrame frame;
@@ -45,7 +47,9 @@ public class Application {
 	
 	//static public Date date = new Date();
 	static public Date date = new Date(12-04-2018);
-	 
+	public static final String[] accountTypes = { "Student-Checking", "Interest-Checking", "Savings", "Pocket" };
+
+
 	public static void main(String[] args) throws SQLException, IOException {
 		app = new Application();
 		
@@ -94,11 +98,13 @@ public class Application {
 	    //initialize all buttons 
 	    ATM = new JButton("ATM");
 	    BankTeller = new JButton("Bank Teller");
+	    setInterest = new JButton("Set Interest");
 	    
 	    
 	    // add action listeners for buttons
 	    ATM.addActionListener(new ATMBtnClicked());
 	    BankTeller.addActionListener(new BankTellerBtnClicked());
+	    setInterest.addActionListener(new setInterestClicked());
 	    
 	    model = new UtilDateModel();
 	    p = new Properties();
@@ -112,8 +118,6 @@ public class Application {
 	    datePicker.setVisible(true);
 	    datePicker.setName("AHHAHAHHAH");
 
-	    ATM.setBounds(40,100,100,600);
-	    
 	    panel = new JPanel();
 	    emptyPanel = new JPanel();
 	    updateUI();
@@ -126,10 +130,11 @@ public class Application {
 	
 	public void updateUI() {
 		// add buttons to grid
-		panel.setLayout(new FlowLayout());
+		panel.setLayout(new GridLayout());
 		panel.add(datePicker);
 		panel.add(ATM);
 		panel.add(BankTeller);
+		panel.add(setInterest);
 		//frame.getContentPane().add(BorderLayout.NORTH, datePicker);
 	}
 	
@@ -186,4 +191,22 @@ public class Application {
         }
 
     }
+
+    private class setInterestClicked implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			System.out.println("Set Interest clicked");
+
+			String pickedType = (String) JOptionPane.showInputDialog(frame,
+					"Pick an account type to set Interest: ",
+					"Favorite Pizza",
+					JOptionPane.QUESTION_MESSAGE,
+					null,
+					accountTypes,
+					accountTypes[0]);
+			float interestRate = Float.parseFloat(JOptionPane.showInputDialog(frame, "Enter Interest rate"));
+			JOptionPane.showMessageDialog(frame, "Set interest rate for " + pickedType + " to " + interestRate);
+			BankTellerUtility.setInterestRate(pickedType, interestRate);
+		}
+	}
 }

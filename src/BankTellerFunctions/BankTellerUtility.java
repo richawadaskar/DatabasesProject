@@ -56,4 +56,16 @@ public class BankTellerUtility {
 		if(exists.next()) return exists.getInt(1);
 		else throw new SQLException();
 	}
+
+	public static void setInterestRate(String accountType, float interestRate) {
+		String updateQuery = "UPDATE CR_ACCOUNTS SET interestRate = " + interestRate
+				+ " WHERE isClosed = 0 AND accountType = '" + accountType +"'";
+
+		try {
+			int updateInterest = Application.stmt.executeUpdate(updateQuery);
+
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+	}
 }
