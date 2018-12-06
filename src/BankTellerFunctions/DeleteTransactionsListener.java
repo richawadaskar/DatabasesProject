@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Calendar;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -24,25 +25,19 @@ public class DeleteTransactionsListener implements ActionListener {
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
 		System.out.println("deleting transactions clicked");
+						
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(Application.date);
+		int month = cal.get(Calendar.MONTH);
 		
-		BankTellerUtility.setUpBackPanelToBankTeller(backPanel, backButton);
-		
-		panel.removeAll();
-		
-		String query = "DELETE FROM CR_TRANSACTIONS";
+		String query = "DELETE FROM CR_TRANSACTIONS "
+			+ "WHERE EXTRACT(MONTH FROM TRANSACTIONDATE) != " + month;
 		
 		try {
 			int numUpdated = Application.stmt.executeUpdate(query);
-			
-			BankTellerUtility.showPopUpMessage("Successful brother. Updated " + numUpdated + " rows.");
-			
-			panel.removeAll();
-			BankTellerUtility.setUpBackPanelToBankTeller(backPanel, backButton);
-			
+			BankTellerUtility.showPopUpMessage("Successful brother. Updated " + numUpdated + " rows.");			
 		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		

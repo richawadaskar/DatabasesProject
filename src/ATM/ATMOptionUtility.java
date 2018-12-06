@@ -310,7 +310,7 @@ public class ATMOptionUtility {
 	}
 	
 	public static void insertIntoCustomerTable() throws SQLException, IOException {
-		BufferedReader customers = new BufferedReader(new FileReader("/Users/cindylulu/Developer/cs174A/DatabasesProject/users.csv"));
+		BufferedReader customers = new BufferedReader(new FileReader("/cs/student/richa_wadaskar/cs174A/project/DatabasesProject/users.csv"));
             
 		String line = customers.readLine();
             
@@ -332,7 +332,7 @@ public class ATMOptionUtility {
 	}
 
 	public static void insertIntoAccountsTable() throws SQLException, IOException {
-		BufferedReader accounts = new BufferedReader(new FileReader("/Users/cindylulu/Developer/cs174A/DatabasesProject/accounts.csv"));
+		BufferedReader accounts = new BufferedReader(new FileReader("/cs/student/richa_wadaskar/cs174A/project/DatabasesProject/accounts.csv"));
 
 		String line = accounts.readLine();
 
@@ -361,7 +361,7 @@ public class ATMOptionUtility {
 	}
 
 	public static void insertIntoPocketAccountsTable() throws SQLException, IOException {
-		BufferedReader accounts = new BufferedReader(new FileReader("/Users/cindylulu/Developer/cs174A/DatabasesProject/pockets.csv"));
+		BufferedReader accounts = new BufferedReader(new FileReader("/cs/student/richa_wadaskar/cs174A/project/DatabasesProject/pockets.csv"));
 
 		String line = accounts.readLine();
 
@@ -383,7 +383,7 @@ public class ATMOptionUtility {
 	}
 
 	public static void insertIntoOwnedTable() throws SQLException, IOException {
-		BufferedReader owned = new BufferedReader(new FileReader("/Users/cindylulu/Developer/cs174A/DatabasesProject/accountsOwnedBy.csv"));
+		BufferedReader owned = new BufferedReader(new FileReader("/cs/student/richa_wadaskar/cs174A/project/DatabasesProject/accountsOwnedBy.csv"));
 
 		String line = owned.readLine();
 

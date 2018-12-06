@@ -68,11 +68,6 @@ public class TopUpListener implements ActionListener {
 		if(ATMOptionUtility.findAllPocketAccountNumbers(ssn).size() == 0)  {
 			JOptionPane.showMessageDialog(frame, "You don't have a pocket account.");
 		}
-
-		topUpAccountId = Integer.parseInt(topUpAccountNumber.getSelectedItem().toString());
-		fromAccountId = ATMOptionUtility.getLinkedAccount(topUpAccountId);
-		fromAccount.setText(Integer.toString(fromAccountId));
-
 	}
 	
 	private class EnterListener implements ActionListener {
@@ -80,6 +75,9 @@ public class TopUpListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
+			topUpAccountId = Integer.parseInt(topUpAccountNumber.getSelectedItem().toString());
+			fromAccountId = ATMOptionUtility.getLinkedAccount(topUpAccountId);
+			fromAccount.setText(Integer.toString(fromAccountId));
 
 			float amountTopUp = Float.parseFloat(topUpAmount.getText());
 

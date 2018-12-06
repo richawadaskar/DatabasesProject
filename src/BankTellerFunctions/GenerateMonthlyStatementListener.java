@@ -10,7 +10,6 @@ import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -24,6 +23,7 @@ public class GenerateMonthlyStatementListener implements ActionListener {
 	JTextField ssn;
 	ArrayList<Integer> accountList;
 	ArrayList<Integer> primaryOwnerAccounts;
+	ArrayList<Integer> ownerList;
 	
 	static int balance = 0;
 
@@ -34,6 +34,7 @@ public class GenerateMonthlyStatementListener implements ActionListener {
 		panel = incomingPanel;
 		accountList = new ArrayList<Integer>();
 		primaryOwnerAccounts = new ArrayList<Integer>();
+		ownerList = new ArrayList<Integer>();
 	}
 
 	@Override
@@ -62,11 +63,15 @@ public class GenerateMonthlyStatementListener implements ActionListener {
 		public void actionPerformed(ActionEvent arg0) {
 			balance = 0;
 			
+			accountList.clear();
+			primaryOwnerAccounts.clear();
+			ownerList.clear();
+			
 			try{				
 				int taxId = Integer.parseInt(ssn.getText());
 				
 				findAccountsForCustomer(taxId);
-								
+						
 				String transactionInformation = "";
 				for(int id: accountList) {
 					transactionInformation += "AccountId: " + id + "\n";
@@ -80,9 +85,7 @@ public class GenerateMonthlyStatementListener implements ActionListener {
 							+ "combined in all your primary accounts.";
 				}
 				
-				System.out.println(transactionInformation);
-
-				// provide customer monthly statement, maybe in another panel??? For now, we're just printing to console.
+				BankTellerUtility.showPopUpMessage(transactionInformation);
 				
 				panel.repaint();
 				BankTellerUtility.setUpBackPanelToBankTeller(backPanel, backButton);
@@ -98,27 +101,34 @@ public class GenerateMonthlyStatementListener implements ActionListener {
 		public String getOwnerInformation(int accountId) throws SQLException {
 			System.out.println("AccountId:asdfsda " + accountId);
 			
-			// TODO: WHAT THE FUCKKKK IT SHOULD RETURN MULTIPLE OWNERS.......
-			String ownersQuery = "SELECT * FROM CR_ACCOUNTSOWNEDBY WHERE ACCOUNTID = " + accountId;
+			String ownersQuery = "SELECT SSN FROM CR_ACCOUNTSOWNEDBY WHERE ACCOUNTID = " + accountId;
 			ResultSet res = Application.stmt.executeQuery(ownersQuery);
 			
 			String ownersInfo = "";
 			while(res.next()) {
-				int ssn = res.getInt(2);
-				System.out.println("Hi: " + ssn + ", ");
-				String getOwnerInfo = "SELECT * FROM CR_CUSTOMER WHERE SSN = " + ssn;
-				
-				ResultSet info = Application.stmt.executeQuery(getOwnerInfo);
-				
-				while(info.next()) {
-					String ownerName = info.getString("name");
-					String ownerAddress = info.getString("address");
-					ownersInfo += "owner: " + ownerName + ", address: " + ownerAddress + "\n";
-				}
+				int ssn = res.getInt("ssn");
+				ownerList.add(ssn);
 			}
 			
-			System.out.println(ownersInfo);
+			for(int id: ownerList) {
+				ownersInfo += (getOwnerInfo(id));
+			}
 			return ownersInfo;
+		}
+		
+		public String getOwnerInfo(int ssn) throws SQLException {
+			System.out.println("Hi: " + ssn + ", ");
+			String getOwnerInfo = "SELECT * FROM CR_CUSTOMER WHERE SSN = " + ssn;
+			
+			ResultSet info = Application.stmt.executeQuery(getOwnerInfo);
+			
+			String ownerInfo = "";
+			while(info.next()) {
+				String ownerName = info.getString("name");
+				String ownerAddress = info.getString("address");
+				ownerInfo += "owner: " + ownerName + ", address: " + ownerAddress + "\n";
+			}
+			return ownerInfo;
 		}
 		
 		public String getInitialAndFinalBalance(int accountId) throws SQLException{
@@ -147,16 +157,21 @@ public class GenerateMonthlyStatementListener implements ActionListener {
 			while(accountTransactions.next()) {
 	            int transId = accountTransactions.getInt("transactionid");
 	            String transType = accountTransactions.getString("transactiontype");
-	            int customerId = accountTransactions.getInt("customerid");
-	            int account1Id = accountTransactions.getInt("account1id");
-	            int account2Id = accountTransactions.getInt("account2id");
-	            int amount = accountTransactions.getInt("amount");
 	            String otherInfo = accountTransactions.getString("otherinformation");
 	            Date transDate = accountTransactions.getDate("transactiondate");
+	            int account1Id = accountTransactions.getInt("account1id");
+
+	            if(transType.equals("addInterest")) {
+	            	accum += "transactionId: " + transId + ", " + "transactionType: " + transType + 
+		            		", account1Id: " + account1Id + ", otherInfo: " + otherInfo + ", dateTransaction: " + transDate + "\n";
+	            } else {
+		            int account2Id = accountTransactions.getInt("account2id");
+		            int amount = accountTransactions.getInt("amount");
+		            accum += "transactionId: " + transId + ", " + "transactionType: " + transType + 
+		            		", account1Id: " + account1Id + ", account2Id: " + account2Id + ", amount: " + amount +
+		            		", otherInfo: " + otherInfo + ", dateTransaction: " + transDate + "\n";
+	            }
 	            
-	            accum += "transactionId: " + transId + ", " + "transactionType: " + transType + 
-	            		", account1Id: " + account1Id + ", account2Id: " + account2Id + ", amount: " + amount +
-	            		", otherInfo: " + otherInfo + ", dateTransaction: " + transDate + "\n";
 			}
 			
 			return accum;
@@ -176,6 +191,7 @@ public class GenerateMonthlyStatementListener implements ActionListener {
 				int primaryOwner = Integer.parseInt(accounts.getString(2));
 				if(primaryOwner == 1) primaryOwnerAccounts.add(id);
 				accountList.add(id);
+				System.out.println(id);
 			}
 		}
 	}

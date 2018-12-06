@@ -39,7 +39,7 @@ public class ClosedAccountsListener implements ActionListener {
 				output += a += ", ";
 			}
 			
-			output = output.substring(0, output.length() - 2);
+			if(output.length() > 1) output = output.substring(0, output.length() - 2);
 			
 			JLabel display = new JLabel(output);
 			

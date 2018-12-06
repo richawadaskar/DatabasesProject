@@ -30,7 +30,6 @@ public class CheckTransactionListener implements ActionListener {
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
 		System.out.println("transaction clicked");
 		
 		BankTellerUtility.setUpBackPanelToBankTeller(backPanel, backButton);
@@ -79,6 +78,7 @@ public class CheckTransactionListener implements ActionListener {
 				}
 				
 			} catch(SQLException e) {
+				System.out.println("what the....");
 				BankTellerUtility.showPopUpMessage(e.toString());
 			} catch(Exception e) {
 				BankTellerUtility.showPopUpMessage("Invalid inputs were entered. AccountId and AmountCheck must be positive numbers"
@@ -87,31 +87,36 @@ public class CheckTransactionListener implements ActionListener {
 		}
 		
 		public void updateBalance() throws SQLException {	
-			if(existsAccount()) {
+			if(existsCheckingAccount()) {
 				if(notClosed()) {
 					subtractBalanceAmount();
 				} else {
 					BankTellerUtility.showPopUpMessage("That account has been closed. Please try again.");
 				}
 			} else {
-				BankTellerUtility.showPopUpMessage("No account with that id exists. Please try again.");
+				BankTellerUtility.showPopUpMessage("No checking account with that id exists. Please try again.");
 			}
 		}
 		
 		public boolean notClosed() throws SQLException {
-			String query = "SELECT isClosed FROM CR_ACCOUNTS WHERE AccountId = " + accountId;
+			String query = "SELECT ISCLOSED FROM CR_ACCOUNTS WHERE ACCOUNTID = " + accountId;
 			
 			int closed = 0;
 			ResultSet res = Application.stmt.executeQuery(query);
 			while(res.next()) {
-				closed = res.getInt("accountId");
+				closed = res.getInt("ISCLOSED");
 			}
+			
 			if(closed == 1) return false;
 			return true;
 		}
 		
-		public boolean existsAccount() throws SQLException {
-			String accountExists = "SELECT * FROM CR_ACCOUNTS WHERE accountId =" + accountId;
+		public boolean existsCheckingAccount() throws SQLException {
+			String accountExists = "SELECT * FROM CR_ACCOUNTS WHERE ACCOUNTTYPE = 'Student-Checking' OR "
+					+ "ACCOUNTTYPE = 'Interest-Checking' AND ACCOUNTID = " + accountId;
+			
+			
+			System.out.println(accountExists);
 			
 			ResultSet exists = Application.stmt.executeQuery(accountExists);
 			return exists.next();
@@ -154,8 +159,8 @@ public class CheckTransactionListener implements ActionListener {
 					String type = "'Write check'";
 					String check = "checkNumber: " + checkNumber;
 					String transactionsQuery = "INSERT INTO CR_TRANSACTIONS "
-							+ "VALUES(" + transactionId + ", " + type + ", " + ssn + ", " + accountId + ", null, " + amountCheck + ", "
-									+ "'" + check + "', to_date('" + Application.getDate() + "', 'mm-dd-yyyy'))";
+							+ "VALUES(" + transactionId + ", " + type + ", to_date('" + Application.getDate() + "', 'mm-dd-yyyy'), " + ssn + ", " + accountId + ", " + 
+							"null, " + amountCheck + ", 'check')";
 					System.out.println(transactionsQuery);
 					int numRowsUpdated = Application.stmt.executeUpdate(transactionsQuery);
 					assert(numRowsUpdated == 1);

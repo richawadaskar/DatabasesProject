@@ -4,8 +4,12 @@ import java.awt.*;
 import java.awt.event.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.*;
+
+import ATM.ATMOptionUtility;
+import DebtsRus.Application;
 
 public class CreateAccountListener implements ActionListener {
 
@@ -15,8 +19,8 @@ public class CreateAccountListener implements ActionListener {
 	
 	JTextField accountType;
 	String typeAccount;
-	int primaryOwner;
-	ArrayList<Integer> otherOwners;
+	ArrayList<Integer> owners;
+	ArrayList<Integer> newOwners;
 	int initialDeposit;
 	JComboBox typeList;
 	JTextField depositAmount; 
@@ -25,9 +29,11 @@ public class CreateAccountListener implements ActionListener {
 	JButton addNewCustomer;
 	JLabel ongoing;
 	JLabel ownerLabel;
-	
-	String[] accountTypes = {"Checking: Student", "Checking: Interest", "Savings"};
-	
+	JComboBox accountLinked;
+	JTextField topUpAmount;
+		
+	String[] accountTypes = {"Checking: Student", "Checking: Interest", "Savings", "Pocket"};
+
 	CreateAccountListener(JPanel incomingPanel, JPanel incomingBackPanel, JButton incomingButton) {
 		backPanel = incomingBackPanel;
 		backButton = incomingButton;
@@ -36,20 +42,27 @@ public class CreateAccountListener implements ActionListener {
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
 		System.out.println("create accounts clicked");
-		
 		BankTellerUtility.setUpBackPanelToBankTeller(backPanel, backButton);
-		
-		primaryOwner = -1;
-		
 		panel.removeAll();
-		
 		setUpCreateAccountUI();
-		
-		otherOwners = new ArrayList<Integer>();
-		
+		owners = new ArrayList<Integer>();
+		newOwners = new ArrayList<Integer>();
 		panel.updateUI();
+	}
+	
+	public void setUpCreateAccountUI() {
+		panel.setLayout(new FlowLayout());
+		
+		typeList = new JComboBox(accountTypes);
+		JLabel type = new JLabel("Select Account Type: ");
+		
+		JButton enter = new JButton("Enter");
+		enter.addActionListener(new EnterListener());
+		
+		panel.add(type);
+		panel.add(typeList);
+		panel.add(enter);
 	}
 	
 	public void addOwners() {
@@ -72,13 +85,18 @@ public class CreateAccountListener implements ActionListener {
 		panel.add(next);
 		
 		String currOwners = "";
-		if(primaryOwner >= 0) {
-			currOwners += primaryOwner;
-			for(int i: otherOwners) {
-				currOwners = currOwners + ", " + i;
+		boolean first = true;
+		for(int i: owners) {
+			if(first) {
+				currOwners += "\r\nPrimary owner: " + i + "\nOther owners: ";
+				first = false;
+			} else {
+				currOwners += i + ", ";
 			}
 		}
+		if(owners.size() > 1) currOwners = currOwners.substring(0, currOwners.length() - 2);
 		
+		//TODO: figure out how to display the list of current owners
 		ongoing = new JLabel(currOwners);
 
 		panel.add(ongoing);
@@ -86,30 +104,102 @@ public class CreateAccountListener implements ActionListener {
 		panel.updateUI();
 	}
 	
-	public void setUpCreateAccountUI() {
-		panel.setLayout(new FlowLayout());
-		
-		typeList = new JComboBox(accountTypes);
-		JLabel type = new JLabel("Select Account Type: ");
-		
-		JButton enter = new JButton("Enter");
-		enter.addActionListener(new EnterListener());
-		
-		panel.add(type);
-		panel.add(typeList);
-		panel.add(enter);
+	public void initialDepositScreen() {
+		JLabel depositAmountLabel = new JLabel("Enter amount to deposit: ");
+		depositAmount = new JTextField(20);
+		panel.add(depositAmountLabel);
+		panel.add(depositAmount);
+		JButton deposit = new JButton("Deposit");
+		deposit.addActionListener(new DepositListener());
+		panel.add(deposit);
+		panel.updateUI();
 	}
 	
-	public void initialDepositScreen() {
-		JLabel depositAmountLabel = new JLabel("Enter amount to deposit");
-		depositAmount = new JTextField(20);
+	public void pocketTopUpScreen() {
+		List<Integer> accountsToLink = ATMOptionUtility.findAllCheckingSavingAccountNumbers(owners.get(0));
+		
+		JLabel accountToLink = new JLabel("Select Account to Link to: ");
+		accountLinked = new JComboBox(accountsToLink.toArray());
+
+		JLabel topUpAmountLabel = new JLabel("Enter Amount to Top Up: ");
+		topUpAmount = new JTextField(20);
+		
+		panel.add(accountToLink);
+		panel.add(accountLinked);
+		panel.add(topUpAmountLabel);
+		panel.add(topUpAmount);
+		
+		JButton enter = new JButton("Enter");
+		enter.addActionListener(new TopUpEnterListener());
+		panel.add(enter);
+		
+		panel.updateUI();
+		System.out.println("Performing top up.");
+	}
+	
+	private class TopUpEnterListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			float amount = Integer.parseInt(topUpAmount.getText());
+			int topUpAccountId;
+			try {
+				topUpAccountId = BankTellerUtility.generateAccountID() + 1;
+				if(amount <= 0) {
+					BankTellerUtility.showPopUpMessage("Amount being deposited must be a positive number.");
+				} else {
+					int accountIdSelected = Integer.parseInt(accountLinked.getSelectedItem().toString());
+					if (ATMOptionUtility.checkEnoughBalance(accountIdSelected, amount)) {
+						ATMOptionUtility.addToPocketAccountTable(topUpAccountId, accountIdSelected);
+						ATMOptionUtility.subtractMoneyToAccountId(accountIdSelected, amount);
+						ATMOptionUtility.addMoneyToAccountId(accountIdSelected, amount);
+						ATMOptionUtility.addToTransactionsTable("Top-up", owners.get(0), topUpAccountId, accountIdSelected, amount);
+						BankTellerUtility.showPopUpMessage("Top-up succeeded.");
+					} else {
+						BankTellerUtility.showPopUpMessage("You don't have enough money in your linked account to make this transaction.");
+					}
+			}
+			} catch (SQLException e) {
+				BankTellerUtility.showPopUpMessage("Unfortunately an error occurred. Please try again later.");
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private class DepositListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			try {
+				float amount = Integer.parseInt(depositAmount.getText());
+				int accountId = BankTellerUtility.generateAccountID() + 1;
+				System.out.println(accountId);
+				
+				assert(amount > 0);
+				
+				float interestRate = (float) BankTellerUtility.getInterestRate(typeAccount);
+				int primary = owners.get(0);
+				
+				ATMOptionUtility.addToAccountsTable(accountId, primary, "Santa Barbara", interestRate, amount, amount, 0, typeAccount);
+				
+				ATMOptionUtility.addMoneyToAccountId(accountId, amount);
+				ATMOptionUtility.addToTransactionsTable("Deposit", owners.get(0), accountId, amount);
+				
+				BankTellerUtility.showPopUpMessage("New account was successfully created.");
+				BankTellerUtility.addOwnersIntoOwnedByTable(owners, accountId);
+			} catch (SQLException e1) {
+				BankTellerUtility.showPopUpMessage("Invalid inputs were entered into amount field.");
+				e1.printStackTrace();
+			} catch (Exception ee) {
+				BankTellerUtility.showPopUpMessage("Amount entered must be positive.");
+			}
+		}
 	}
 	
 	private class AddOwnerListener implements ActionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
 			Object[] options = {"Yes existing Customer",
                     "No, it's a new customer"};
 			int n = JOptionPane.showOptionDialog(BankTeller.frame,
@@ -120,65 +210,54 @@ public class CreateAccountListener implements ActionListener {
 			    null,
 			    options,
 			    options[0]);
-			
-			System.out.println(n);
-			
 			if(n == 1) {
 				panel.removeAll();
 				newBankCustomerUI();
-
 				panel.updateUI();
-				
-				System.out.println("why is the ui nNIFOASHDFKLot updating...");
-				
 			} else {
 				int inputSSN = Integer.parseInt(JOptionPane.showInputDialog(BankTeller.frame, "Enter Owner's ssn: "));
-				
 				try {
 					if(BankTellerUtility.existsCustomer(inputSSN)) {
-						if(primaryOwner == -1) {
-							primaryOwner = inputSSN;
-						} else {
-							otherOwners.add(inputSSN);
-						}
-						
+						owners.add(inputSSN);
 						panel.removeAll();
-						addOwnersUI();
-												
-						panel.repaint();
-
-					// don't add any info to database until the final "finish" button is clicked.
+						addOwnersUI();		
+						panel.updateUI();
 					} else {
-						// invalid customer... you suck.
-						BankTellerUtility.showPopUpMessage("Bish that was an invalid customer....");
+						BankTellerUtility.showPopUpMessage("The SSN you entered isn't a customer of our bank yet.");
 					}
 				} catch (SQLException ee) {
 					BankTellerUtility.showPopUpMessage("Invalid inputs were entered.");
-					ee.printStackTrace();
 				}
-				
+				panel.removeAll();
+				addOwnersUI();
+				panel.updateUI();
 			}
 		}
 		
 		public void newBankCustomerUI() {
 			panel.setLayout(new GridBagLayout());
 			
-			int enterSSN = Integer.parseInt(JOptionPane.showInputDialog(BankTeller.frame, "Enter new Customer's ssn: "));
-			String enterName = JOptionPane.showInputDialog(BankTeller.frame, "Enter Customer Name: ");
-			String address = JOptionPane.showInputDialog(BankTeller.frame, "Enter Owner's address: ");
-			String pin = JOptionPane.showInputDialog(BankTeller.frame, "Enter Owner's pin: ");
+			try {
+				int enterSSN = Integer.parseInt(JOptionPane.showInputDialog(BankTeller.frame, "Enter new Customer's ssn: "));
+				String enterName = JOptionPane.showInputDialog(BankTeller.frame, "Enter Customer Name: ");
+				String address = JOptionPane.showInputDialog(BankTeller.frame, "Enter Owner's address: ");
+				
+				// CHECK THAT PIN IS UNIQUE LATER!!!
+				String pin = JOptionPane.showInputDialog(BankTeller.frame, "Enter Owner's pin: ");
+				
+				owners.add(enterSSN);
+				newOwners.add(enterSSN);
+				
+				BankTellerUtility.addToCustomersTable(enterSSN, enterName, address, pin);
 			
-			JButton enter = new JButton("Enter");
-			enter.addActionListener(new newCustomerAddedListener());
-			
-			if(primaryOwner == -1) {
-				primaryOwner = enterSSN;
-			} else {
-				otherOwners.add(enterSSN);
+				// TODO: delete new customers when exceptions occur or the account isn't created.... FUCK
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				BankTellerUtility.showPopUpMessage("Invalid inputs were entered. Please try again.");
 			}
-			// store new customers such that you can add to the customers table.
-			
-			panel.add(enter);
+			panel.removeAll();
+			addOwnersUI();
 		}
 	}
 	
@@ -188,7 +267,6 @@ public class CreateAccountListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			typeAccount = typeList.getSelectedItem().toString();
 			panel.removeAll();
-			
 			addOwners();
 		}
 	}
@@ -206,12 +284,17 @@ public class CreateAccountListener implements ActionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if(primaryOwner == -1) {
+			if(owners.size() == 0) {
 				// error message, ask them to add at least 1 owner.
 				BankTellerUtility.showPopUpMessage("You must add at least 1 owner for the account");
 			} else {
-				// ask where to deposit in money from. 
-				initialDepositScreen();
+				if(typeAccount == "Pocket") {
+					panel.removeAll();
+					pocketTopUpScreen();
+				} else {
+					panel.removeAll();
+					initialDepositScreen();
+				}
 			}
 		}
 	}

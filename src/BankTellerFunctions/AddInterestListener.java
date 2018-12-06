@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -18,11 +19,13 @@ public class AddInterestListener implements ActionListener {
 	JPanel backPanel;
 	JPanel panel;
 	JButton backButton;
+	ArrayList<Integer> accountList;
 	
 	AddInterestListener(JPanel incomingPanel, JPanel incomingBackPanel, JButton incomingButton) {
 		backPanel = incomingBackPanel;
 		backButton = incomingButton;
 		panel = incomingPanel;
+		accountList = new ArrayList<Integer>();
 	}
 	
 	@Override
@@ -34,6 +37,7 @@ public class AddInterestListener implements ActionListener {
 				BankTellerUtility.showPopUpMessage("Warning: Interest has already been added this month.");
 			} else {
 				addInterest();
+				updateTransactions();
 			}
 		} catch (SQLException e1) {
 			BankTellerUtility.showPopUpMessage("An error has occurred. Please try again later.");
@@ -74,17 +78,28 @@ public class AddInterestListener implements ActionListener {
 			int numUpdated = Application.stmt.executeUpdate(updateQuery);
 			
 			BankTellerUtility.showPopUpMessage("Successful brother. Updated " + numUpdated + " rows.");
-				
-			panel.removeAll();
-			BankTellerUtility.setUpBackPanelToBankTeller(backPanel, backButton);
-			
+						
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+	}	
+	
+	public void updateTransactions() throws SQLException {
+		String accounts = "SELECT ACCOUNTID FROM CR_ACCOUNTS WHERE ISCLOSED = 0";
+		
+		ResultSet res = Application.stmt.executeQuery(accounts);
+		while(res.next()) {
+			accountList.add(res.getInt("accountid"));
+		}
+		
+		for(int id: accountList) {
 			String updateTransactionsTable = "INSERT INTO CR_TRANSACTIONS VALUES("
 					+ (BankTellerUtility.getNumberTransactions() + 1) + ", "
 					+ "'addInterest', to_date('"
 					+ Application.getDate()
 					+ "', 'mm-dd-yyyy'), "
 					+ "null, "
-					+ "null, "
+					+ id + ", "
 					+ "null, "
 					+ "0, "
 					+ "'interestAddedForMonth')";
@@ -93,9 +108,6 @@ public class AddInterestListener implements ActionListener {
 			
 			int rowsUpdated = Application.stmt.executeUpdate(updateTransactionsTable);
 			assert(rowsUpdated == 1);
-			
-		} catch (SQLException e1) {
-			e1.printStackTrace();
 		}
-	}	
+	}
 }

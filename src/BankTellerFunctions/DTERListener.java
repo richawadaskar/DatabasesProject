@@ -27,10 +27,6 @@ public class DTERListener implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		System.out.println("GTDR clicked");
 		
-		BankTellerUtility.setUpBackPanelToBankTeller(backPanel, backButton);
-		
-		panel.removeAll();
-				
 		String query = "SELECT * "
 				+ "FROM CR_CUSTOMER C "
 				+ "WHERE C.ssn IN "
@@ -40,21 +36,20 @@ public class DTERListener implements ActionListener {
 								+ " GROUP BY customerId "
 								+ " HAVING SUM(AMOUNT) > 10000)";
 		
+		String output = "";
 		try {
 			ResultSet set = Application.stmt.executeQuery(query);
 			
 			while(set.next()) {
 				String ssn = set.getString("ssn");
 				String name = set.getString("name");
-				System.out.print("SSN: " + ssn + ", ");
-				System.out.println("NAME: " + name + "\n");
+				output += "SSN: " + ssn + ", ";
+				output += "NAME: " + name + "\n";
 			}
 			
 			// TODO: Display this output somewhere on a panel or something.
-			
-			panel.removeAll();
-			BankTellerUtility.setUpBackPanelToBankTeller(backPanel, backButton);
-	
+			BankTellerUtility.showPopUpMessage(output);
+				
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 		}

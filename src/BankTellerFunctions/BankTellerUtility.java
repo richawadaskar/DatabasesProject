@@ -2,6 +2,7 @@ package BankTellerFunctions;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -67,5 +68,46 @@ public class BankTellerUtility {
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static int generateAccountID() throws SQLException {
+		String maxAccounts = "SELECT MAX(ACCOUNTID) FROM CR_ACCOUNTS" ;
+		
+		ResultSet exists = Application.stmt.executeQuery(maxAccounts);
+		
+		if(exists.next()) return exists.getInt(1);
+		else throw new SQLException();
+	}
+	
+	public static void addOwnersIntoOwnedByTable(ArrayList<Integer> owners, int accountId) throws SQLException {
+		boolean first = true;
+		int isPrimaryOwner = 1;
+		for(int ownerID: owners) {
+			String toTransactions = "";
+			int transactionId = BankTellerUtility.getNumberTransactions() + 1;
+			toTransactions = "INSERT INTO CR_ACCOUNTSOWNEDBY VALUES "
+					+ "(" + accountId + ", " + ownerID + ", " + isPrimaryOwner + ")";
+			if(first) {
+				isPrimaryOwner = 0;
+				first = false;
+			}
+		}
+	}
+	
+	public static void addToCustomersTable(int ssn, String name, String address, String pin) throws SQLException {
+		String query = "INSERT INTO CR_CUSTOMER VALUES(" + ssn + ", '" + name + "', '" + address + "', '" + pin + "')";
+		System.out.println(query);
+		
+		int numRowsUpdated = Application.stmt.executeUpdate(query);
+		System.out.println("rows updated: " + numRowsUpdated);
+		assert(numRowsUpdated == 1);
+	}
+	
+	public static double getInterestRate(String typeAccount) {
+		if(typeAccount == "Pocket") return Application.pocketInterestRate;
+		if(typeAccount == "Student-Checkings") return Application.checkingInterestRate;
+		if(typeAccount == "Interest-Checkings") return Application.checkingInterestRate;
+		if(typeAccount == "Savings") return Application.savingsInterestRate;
+		return 0;
 	}
 }

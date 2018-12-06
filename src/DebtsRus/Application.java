@@ -4,12 +4,8 @@ import java.util.Date;
 import java.util.Properties;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.sql.*;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 import BankTellerFunctions.*;
@@ -17,7 +13,6 @@ import ATM.*;
 
 import javax.swing.*;
 
-import com.sun.codemodel.internal.fmt.JBinaryFile;
 import org.jdatepicker.impl.DateComponentFormatter;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
@@ -44,6 +39,11 @@ public class Application {
 	
 	static Application app = null;
 	public ATM atm;
+	
+	public static double pocketInterestRate = 0;
+	public static double checkingInterestRate = 0;
+	public static double savingsInterestRate = 0;
+	
 	
 	//static public Date date = new Date();
 	static public Date date = new Date(12-04-2018);

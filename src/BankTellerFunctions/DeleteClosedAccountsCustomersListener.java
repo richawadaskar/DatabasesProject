@@ -23,7 +23,6 @@ public class DeleteClosedAccountsCustomersListener implements ActionListener {
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		//TODO: if pocket's parent is deleted, delete pocket too. Also in DELETE TRANSACTIONS.
 		System.out.println("deleting accounts customers clicked");
 		
 		BankTellerUtility.setUpBackPanelToBankTeller(backPanel, backButton);
@@ -34,21 +33,20 @@ public class DeleteClosedAccountsCustomersListener implements ActionListener {
 		
 		try {
 			int numUpdated = Application.stmt.executeUpdate(query);
-						
+			
 			String query2 = "DELETE FROM CR_CUSTOMERS "
 					+ "WHERE CR_CUSTOMERS.SSN NOT IN ( SELECT SSN"
 													+ " FROM CR_ACCOUNTSOWNEDBY )";
 			
 			int numUpdated2 = Application.stmt.executeUpdate(query2);
 			
-			BankTellerUtility.showPopUpMessage("Deleted " + (numUpdated + numUpdated2) + " rows.");
-			
+			BankTellerUtility.showPopUpMessage("Deleted " + numUpdated + " Closed Accounts and " 
+					+ numUpdated2 + " Closed Customers.");
 			
 			panel.removeAll();
 			BankTellerUtility.setUpBackPanelToBankTeller(backPanel, backButton);
 			
 		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		
