@@ -42,7 +42,8 @@ public class Application {
 	static Application app = null;
 	public ATM atm;
 	
-	static public Date date = new Date();
+	//static public Date date = new Date();
+	static public Date date = new Date(12-04-2018);
 	 
 	public static void main(String[] args) throws SQLException, IOException {
 		app = new Application();
@@ -51,7 +52,6 @@ public class Application {
 		
 		app.setUpUI();
 	
-		date = new Date();
 		//ATMOptionUtility.insertIntoCustomerTable();
 	}
 	
@@ -141,7 +141,7 @@ public class Application {
 		Application.date = newDate;
 		
 		if(lastDayOfMonth(newDate)) {
-			// accrue interest.  aka call addinterestlistener
+			// accrue interest.  aka call addinterestlistener     dfvsdfsjd
 			
 		}
 	}
