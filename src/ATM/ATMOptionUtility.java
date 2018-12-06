@@ -33,7 +33,7 @@ public class ATMOptionUtility {
 		
 		
 		String addTransaction = "INSERT into CR_TRANSACTIONS values( "
-				+ transactionId + ", '" + transactionType + "', " + ssn + ", " + account1Id + ", null, " + amount + ", null, " + date+ ")";
+				+ transactionId + ", '" + transactionType + "', " + date + ", " + ssn + ", " + account1Id + ", null, " + amount + ", null" + ")";
 		Application.stmt.executeUpdate(addTransaction);
 		
 	}
@@ -43,7 +43,7 @@ public class ATMOptionUtility {
 		//int customerId = getCustomerId(name);
 		
 		String addTransaction = "INSERT into CR_TRANSACTIONS values( "
-				+ transactionId + ", '" + transactionType + "', " + ssn + ", " + account1Id + ", " + account2Id + ", " + amount + ", " + null + ", " + date + ")";
+				+ transactionId + ", '" + transactionType + "', " + ", " + date + ssn + ", " + account1Id + ", " + account2Id + ", " + amount + ", " + null + ")";
 		Application.stmt.executeUpdate(addTransaction);
 		
 	}
