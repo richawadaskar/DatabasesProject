@@ -32,6 +32,7 @@ public class Application {
 	static JButton ATM;
 	static JButton BankTeller;
 	static JPanel panel;
+	static JPanel emptyPanel;
 	static JFrame frame;
 	static JDatePickerImpl datePicker;
 	static UtilDateModel model;
@@ -52,7 +53,10 @@ public class Application {
 		
 		app.setUpUI();
 	
-		//ATMOptionUtility.insertIntoCustomerTable();
+//		ATMOptionUtility.insertIntoCustomerTable();
+		ATMOptionUtility.insertIntoAccountsTable();
+		ATMOptionUtility.insertIntoPocketAccountsTable();
+		ATMOptionUtility.insertIntoOwnedTable();
 	}
 	
 	public void setUpDatabaseConnection() {
@@ -107,11 +111,14 @@ public class Application {
 	    model.setSelected(true);
 	    datePicker.setVisible(true);
 	    datePicker.setName("AHHAHAHHAH");
+
+	    ATM.setBounds(40,100,100,600);
 	    
 	    panel = new JPanel();
+	    emptyPanel = new JPanel();
 	    updateUI();
 	
-	    //frame.getContentPane().add(BorderLayout.NORTH, datePicker);
+	    frame.getContentPane().add(BorderLayout.NORTH, emptyPanel);
 		frame.getContentPane().add(BorderLayout.CENTER, panel); // Adds Button to content pane of frame
 	    frame.setVisible(true);
 	    

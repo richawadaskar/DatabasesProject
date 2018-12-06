@@ -6,9 +6,7 @@ import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 import DebtsRus.*;
 
@@ -24,6 +22,7 @@ public class ATMOption {
 	JButton collect;
 	JButton wire;
 	JButton payFriend;
+	JButton setPIN;
 	JButton backButtonToATMOption;
 	JButton backButton;
 	JPanel panel;
@@ -52,7 +51,7 @@ public class ATMOption {
 	}
 
 	public void setUpATMOptions() {
-		panel.setLayout(new GridLayout(2,4));
+		panel.setLayout(new GridLayout(3,3));
 		
 		//backPanel = new JPanel();
 		
@@ -70,6 +69,7 @@ public class ATMOption {
 		collect = new JButton("Collect");
 		wire = new JButton("Wire");
 		payFriend = new JButton("Pay-Friend");
+		setPIN = new JButton("Set Pin");
 		
 		// add action listeners for buttons
 		deposit.addActionListener(new DepositListener(panel, backPanel, backButtonToATMOption, frame, customerId));
@@ -80,6 +80,7 @@ public class ATMOption {
 		collect.addActionListener(new CollectListener(panel, backPanel, backButtonToATMOption, frame, customerId));
 		wire.addActionListener(new WireListener(panel, backPanel, backButtonToATMOption, frame, customerId));
 		payFriend.addActionListener(new PayFriendListener(panel, backPanel, backButtonToATMOption, frame, customerId));
+		setPIN.addActionListener(new SetPinActionListener());
 		
 		ATMOptionScreen();
 	}
@@ -93,6 +94,7 @@ public class ATMOption {
 		panel.add(collect);
 		panel.add(wire);
 		panel.add(payFriend);
+		panel.add(setPIN);
 		
 		backPanel.add(backButton);
 	}
@@ -119,9 +121,10 @@ public class ATMOption {
 			
 			panel.removeAll();
 			backPanel.removeAll();
-			app.getATM().setUpATMScreen();
 			panel.updateUI();
 			backPanel.updateUI();
+			app.getATM().setUpATMScreen();
+
 		}
 	}
 	
@@ -133,9 +136,26 @@ public class ATMOption {
 						
 			panel.removeAll();
 			backPanel.removeAll();
-			setUpATMOptions();
 			panel.updateUI();
 			backPanel.updateUI();
+			setUpATMOptions();
+
+		}
+	}
+
+	private class SetPinActionListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+
+			String oldPin = JOptionPane.showInputDialog(frame, "What's your old PIN?");
+			if(ATMOptionUtility.checkCredentials(oldPin)) {
+				String newPin = JOptionPane.showInputDialog(frame, "Enter new PIN:");
+				ATMOptionUtility.setPin(frame, Integer.parseInt(oldPin), Integer.parseInt(newPin));
+			} else {
+				JOptionPane.showMessageDialog(frame, "PIN does not exisit.");
+			}
+
 		}
 	}
 	    

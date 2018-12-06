@@ -38,7 +38,6 @@ public class ATM {
     	this.panel.removeAll();
     	
     	setUpATMScreen();
-    	
     }
     
     public void setUpATMScreen() {
@@ -57,11 +56,13 @@ public class ATM {
         panel.add(pinField);
         panel.add(OKButton);
         backPanel.add(backButton);
-    	
-        frame.getContentPane().add(BorderLayout.NORTH, backPanel);
-        frame.getContentPane().add(BorderLayout.CENTER, this.panel); 
 
-        frame.setVisible(true);
+		panel.updateUI();
+
+		frame.getContentPane().add(BorderLayout.NORTH, backPanel);
+		frame.getContentPane().add(BorderLayout.CENTER, panel);
+
+		frame.setVisible(true);
     }
 
     private class BackBtnClicked implements ActionListener {
@@ -72,8 +73,10 @@ public class ATM {
 			
 			panel.removeAll();
 			backPanel.removeAll();
-			app.updateUI();
 			panel.updateUI();
+			backPanel.updateUI();
+			app.updateUI();
+
 		}
 	}
     
@@ -107,24 +110,15 @@ public class ATM {
     		e.printStackTrace();
     	}
             
-    	String sql2 = ("SELECT * FROM CR_CUSTOMER WHERE PIN = " + pinn);
-    	try {
-	    	ResultSet tables1 = app.stmt.executeQuery(sql2);
-	    	if(tables1.next()){
-	    		System.out.println(tables1.getString("pin"));
-	    		ATMOption atmo = new ATMOption(app, frame, panel, backPanel, Integer.parseInt(pinn));
-	    		
-	    	} else {
-	    		System.out.println("PIN does not exist.");
-	    		JOptionPane.showMessageDialog(frame, "Eggs are not supposed to be green.");
-	    		//panel.add(wrongPIN);
-	    		panel.updateUI();
-	    		pinField.cut();
-	    	}
-    	} catch (SQLException e) {
-    		e.printStackTrace();
-    	}
-    	
+    	if(ATMOptionUtility.checkCredentials(pinn)) {
+			ATMOption atmo = new ATMOption(app, frame, panel, backPanel, Integer.parseInt(pinn));
+		} else {
+			System.out.println("PIN does not exist.");
+			JOptionPane.showMessageDialog(frame, "PIN does not exist.");
+			//panel.add(wrongPIN);
+			panel.updateUI();
+			pinField.cut();
+		}
     }
 
     

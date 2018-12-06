@@ -7,10 +7,10 @@ import java.io.IOException;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.swing.JButton;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 import BankTellerFunctions.BankTellerUtility;
 import DebtsRus.Application;
@@ -18,6 +18,83 @@ import DebtsRus.Application;
 public class ATMOptionUtility {
 	
 	static String date = "to_date('" + Application.getDate() + "', 'mm-dd-yyyy')";
+
+	public static boolean checkCredentials(String pinn){
+		String sql3 = "SELECT * FROM CR_CUSTOMER";
+
+		String sql2 = ("SELECT * FROM CR_CUSTOMER WHERE PIN = " + pinn);
+		try {
+			ResultSet tables1 = Application.stmt.executeQuery(sql2);
+			if(tables1.next()){
+				System.out.println(tables1.getString("pin"));
+				return true;
+			} else {
+				return false;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public static void setPin(JFrame frame, int oldPin, int newPin) {
+		String pinExists = "SELECT pin FROM CR_CUSTOMER WHERE pin =" + newPin;
+
+		try {
+			ResultSet exists = Application.stmt.executeQuery(pinExists);
+			if(exists.next()) {
+				JOptionPane.showMessageDialog(frame, "PIN is taken. Try again.");
+			} else {
+				String set = "Update CR_CUSTOMER SET PIN = " + newPin + "WHERE PIN = " + oldPin;
+				try {
+					Application.stmt.executeUpdate(set);
+					JOptionPane.showMessageDialog(frame, "Nice brother! PIN is reset.");
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public static List<Integer> findAllAccountNumbers(int ssn) {
+		List<Integer> accountNumbers = new ArrayList<>();
+		String customerExists = "SELECT AO.accountId FROM CR_ACCOUNTSOWNEDBY AO WHERE AO.ssn = " + ssn +
+				"INTERSECT SELECT A.accountId FROM CR_ACCOUNTS A WHERE A.isCLosed = 0";
+
+		try {
+			ResultSet exists = Application.stmt.executeQuery(customerExists);
+			while (exists.next()) {
+				int accountId = exists.getInt("accountId");
+				accountNumbers.add(accountId);
+			}
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return accountNumbers;
+
+	}
+
+	public static List<Integer> findAllPocketAccountNumbers(int ssn) {
+		List<Integer> accountNumbers = new ArrayList<>();
+		String customerExists = "SELECT O.accountId FROM CR_ACCOUNTSOWNEDBY O WHERE O.ssn = " + ssn +
+				"INTERSECT SELECT A.accountId FROM CR_POCKET A WHERE A.isCLosed = 0 AND A.accountType = 'Pocket'";
+		try {
+			ResultSet exists = Application.stmt.executeQuery(customerExists);
+			while (exists.next()) {
+				int accountId = exists.getInt("accountId");
+				accountNumbers.add(accountId);
+			}
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return accountNumbers;
+
+	}
+
 
 	public static void setUpBackPanelToBankTeller(JPanel backPanel, JButton backButton){
 		backPanel.removeAll();
@@ -57,7 +134,46 @@ public class ATMOptionUtility {
 		//String addCustomer1 = "INSERT INTO CR_CUSTOMER VALUES (400651982, 'Pit Wilson', '911 State St', 1821)";
 		Application.stmt.executeUpdate(addCustomer);
 	}
-	
+
+	public static void addToAccountsTable(int accountId, int primaryOwnerSSN, String branchName, float interestRate,  float balance,
+										  float initialMonthlyBalance, int isClosed, String accountType) throws SQLException {
+		String addAccount = "INSERT into CR_ACCOUNTS values( "
+				+ accountId + ", "+ primaryOwnerSSN + ", '" + branchName + "', " + interestRate + ", "
+				+ balance + ", " + initialMonthlyBalance + ", " + isClosed + ", '" + accountType + "')";
+
+		//String addCustomer1 = "INSERT INTO CR_CUSTOMER VALUES (400651982, 'Pit Wilson', '911 State St', 1821)";
+		Application.stmt.executeUpdate(addAccount);
+	}
+
+	public static void addToPocketAccountTable(int pocketAccountId, int linkedAccount) throws SQLException {
+		String addPocket = "INSERT into CR_POCKET values( "
+				+ pocketAccountId + ", "+ linkedAccount + ")";
+
+		Application.stmt.executeUpdate(addPocket);
+	}
+
+	public static void addToOwnedByTable(int accountId, int ownerId, int isPrimaryOwner) throws SQLException {
+		String addOwned = "INSERT into CR_ACCOUNTSOWNEDBY values( "
+				+ accountId + ", "+ ownerId + ", " + isPrimaryOwner + ")";
+
+		Application.stmt.executeUpdate(addOwned);
+	}
+
+	public static int getLinkedAccount(int pocketAccount) {
+		int linkedAccount = 0;
+		String customerExists = "SELECT linkedAccountId FROM CR_POCKET WHERE accountId =" + pocketAccount;
+
+		try {
+			ResultSet exists = Application.stmt.executeQuery(customerExists);
+			while (exists.next()) {
+				linkedAccount = exists.getInt("linkedAccountId");
+			}
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return linkedAccount;
+	}
+
 	public static int getCustomerId(String name) throws SQLException {
 		int ssn = 0;
 		String customerExists = "SELECT ssn FROM CR_CUSTOMER WHERE name =" + name;
@@ -138,11 +254,11 @@ public class ATMOptionUtility {
 	}
 	
 	public static void insertIntoCustomerTable() throws SQLException, IOException {
-		BufferedReader customers = new BufferedReader(new FileReader("/cs/student/cindylu/cs174A/DatabasesProject/users.csv"));
+		BufferedReader customers = new BufferedReader(new FileReader("/Users/cindylulu/Developer/cs174A/DatabasesProject/users.csv"));
             
 		String line = customers.readLine();
             
-        while(!line.equals("")) {
+        while(line != null) {
             String[] lineParts = line.split(",");
             for(int i = 0; i < lineParts.length; i++) {
             	System.out.print(lineParts[i] + ",");
@@ -158,6 +274,83 @@ public class ATMOptionUtility {
             
         customers.close();
 	}
+
+	public static void insertIntoAccountsTable() throws SQLException, IOException {
+		BufferedReader accounts = new BufferedReader(new FileReader("/Users/cindylulu/Developer/cs174A/DatabasesProject/accounts.csv"));
+
+		String line = accounts.readLine();
+
+		while(line != null) {
+			String[] lineParts = line.split(",");
+
+			int accountId = Integer.parseInt(lineParts[0]);
+			if(!BankTellerUtility.existsAccount(accountId)) {
+				int primaryOwner = Integer.parseInt(lineParts[1]);
+				float interestRate = Float.parseFloat(lineParts[3]);
+				float balance = Float.parseFloat(lineParts[4]);
+				float initialBalance = Float.parseFloat(lineParts[5]);
+				int isClosed = Integer.parseInt(lineParts[6]);
+				ATMOptionUtility.addToAccountsTable(accountId, primaryOwner, lineParts[2], interestRate,
+						balance, initialBalance, isClosed, lineParts[7]);
+				System.out.println("ADDDEDEDEDEDEDEDEDEE");
+			}
+			for(int i = 0; i < lineParts.length; i++) {
+				System.out.print(lineParts[i] + ",");
+			}
+			System.out.println();
+			line = accounts.readLine();
+		}
+
+		accounts.close();
+	}
+
+	public static void insertIntoPocketAccountsTable() throws SQLException, IOException {
+		BufferedReader accounts = new BufferedReader(new FileReader("/Users/cindylulu/Developer/cs174A/DatabasesProject/pockets.csv"));
+
+		String line = accounts.readLine();
+
+		while(line != null) {
+			String[] lineParts = line.split(",");
+			for(int i = 0; i < lineParts.length; i++) {
+				System.out.print(lineParts[i] + ",");
+			}
+			System.out.println();
+			int pocketAccountId = Integer.parseInt(lineParts[0]);
+			if(!BankTellerUtility.existsPocketAccount(pocketAccountId)) {
+				int linkedAccount = Integer.parseInt(lineParts[1]);
+				ATMOptionUtility.addToPocketAccountTable(pocketAccountId, linkedAccount);
+
+			}
+			line = accounts.readLine();
+		}
+		accounts.close();
+	}
+
+	public static void insertIntoOwnedTable() throws SQLException, IOException {
+		BufferedReader owned = new BufferedReader(new FileReader("/Users/cindylulu/Developer/cs174A/DatabasesProject/accountsOwnedBy.csv"));
+
+		String line = owned.readLine();
+
+		while(line != null) {
+			String[] lineParts = line.split(",");
+			for(int i = 0; i < lineParts.length; i++) {
+				System.out.print(lineParts[i] + ",");
+			}
+			System.out.println();
+			int accountId = Integer.parseInt(lineParts[0]);
+			if(!BankTellerUtility.existsOwnedBy(accountId)) {
+				int ownedBy = Integer.parseInt(lineParts[1]);
+				int isPrimaryOwner = Integer.parseInt(lineParts[2]);
+				ATMOptionUtility.addToOwnedByTable(accountId, ownedBy, isPrimaryOwner);
+
+			}
+			line = owned.readLine();
+		}
+
+		owned.close();
+	}
+
+
 	
 	
 	

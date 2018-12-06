@@ -5,13 +5,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 import DebtsRus.*;
 
@@ -23,9 +20,9 @@ public class DepositListener implements ActionListener {
 	JFrame frame;
 	int ssn;
 	
-	JTextField accountNumber;
+	JComboBox accountNumber;
 	JTextField depositAmount;
-	
+
 	DepositListener(JPanel incomingPanel, JPanel incomingBackPanel, JButton incomingButton, JFrame incomingFrame, int customerId) {
 		backPanel = incomingBackPanel;
 		backButton = incomingButton;
@@ -44,7 +41,7 @@ public class DepositListener implements ActionListener {
 		panel.removeAll();
 		
 		JLabel accountNumberLabel = new JLabel("Enter Account Number: ");
-		accountNumber = new JTextField(20);
+		accountNumber = new JComboBox(ATMOptionUtility.findAllAccountNumbers(ssn).toArray());
 		
 		JLabel depositAmountLabel = new JLabel("Enter Amount for Deposit: ");
 		depositAmount = new JTextField(20);
@@ -67,48 +64,43 @@ public class DepositListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
-			int accountId = Integer.parseInt(accountNumber.getText());
+			int accountId = Integer.parseInt(accountNumber.getSelectedItem().toString());
 			float amountDeposit = Float.parseFloat(depositAmount.getText());
 			
 			// check if account exists and that its type is either checking or saving
-			String accountExists = "SELECT accountId, accountType FROM CR_ACCOUNTS WHERE accountId =" + accountId;
+			String accountExists = "SELECT accountType FROM CR_ACCOUNTS WHERE accountId =" + accountId;
 			try {
 				ResultSet tables1 = Application.stmt.executeQuery(accountExists);
-		    	if(tables1.next()){
-		    		String accountType = tables1.getString("accountType");
-		    		
-		    		//if account type is NOT pocket
-		    		if(!accountType.toLowerCase().equals("pocket")) {
-		    		
-			    		String getBalance = "SELECT balance FROM CR_ACCOUNTS WHERE accountId =" + accountId;
-			    		ResultSet balanceTable = Application.stmt.executeQuery(getBalance);
-			    		while(balanceTable.next() ) {
-				    		Float balance = balanceTable.getFloat("balance");
-				    		System.out.println("Initial Money:" + balance);
-				    		
-				    		ATMOptionUtility.addMoneyToAccountId(accountId, amountDeposit);
-				    		ATMOptionUtility.addToTransactionsTable("Deposit", ssn, accountId, amountDeposit);
-				    		JOptionPane.showMessageDialog(frame, "Deposit succeeded.");
-			    		}
-		    		} else {
-		    			JOptionPane.showMessageDialog(frame, "Tis is a pocket account. Cannot deposit.");
-		    		}
-		    		
-		    	} else {
-		    		System.out.println("Account ID does not exist.");
-		    		JOptionPane.showMessageDialog(frame, "Account ID does not exist.");
-		    		//panel.add(wrongPIN);
-		    		panel.updateUI();
-		    	}
+				while(tables1.next()) {
+					String accountType = tables1.getString("accountType");
+
+					//if account type is NOT pocket
+					if (!accountType.toLowerCase().equals("pocket")) {
+
+						String getBalance = "SELECT balance FROM CR_ACCOUNTS WHERE accountId =" + accountId;
+						ResultSet balanceTable = Application.stmt.executeQuery(getBalance);
+						while (balanceTable.next()) {
+							Float balance = balanceTable.getFloat("balance");
+							System.out.println("Initial Money:" + balance);
+
+							ATMOptionUtility.addMoneyToAccountId(accountId, amountDeposit);
+							ATMOptionUtility.addToTransactionsTable("Deposit", ssn, accountId, amountDeposit);
+							JOptionPane.showMessageDialog(frame, "Deposit succeeded.");
+						}
+					} else {
+						JOptionPane.showMessageDialog(frame, "Tis is a pocket account. Cannot deposit.");
+					}
+				}
+
 		    	String getBalance = "SELECT balance FROM CR_ACCOUNTS WHERE accountId =" + accountId;
 	    		ResultSet balanceTable = Application.stmt.executeQuery(getBalance);
 	    		while(balanceTable.next() ) {
 		    		Float balance = balanceTable.getFloat("balance");
 		    		System.out.println("After Money:" + balance);
 	    		}
-		    	
-				} catch (SQLException error) {
-					error.printStackTrace();
+
+			} catch (SQLException error) {
+				error.printStackTrace();
 			}
 
 		}

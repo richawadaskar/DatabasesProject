@@ -27,7 +27,27 @@ public class BankTellerUtility {
 		ResultSet exists = Application.stmt.executeQuery(customerExists);
 		return exists.next();
 	}
-	
+
+	public static boolean existsAccount(int accountId) throws SQLException {
+		String customerExists = "SELECT * FROM CR_ACCOUNTS WHERE accountId =" + accountId;
+
+		ResultSet exists = Application.stmt.executeQuery(customerExists);
+		return exists.next();
+	}
+	public static boolean existsPocketAccount(int accountId) throws SQLException {
+		String customerExists = "SELECT * FROM CR_POCKET WHERE accountId =" + accountId;
+
+		ResultSet exists = Application.stmt.executeQuery(customerExists);
+		return exists.next();
+	}
+
+	public static boolean existsOwnedBy(int accountId) throws SQLException {
+		String customerExists = "SELECT * FROM CR_ACCOUNTSOWNEDBY WHERE accountId =" + accountId;
+
+		ResultSet exists = Application.stmt.executeQuery(customerExists);
+		return exists.next();
+	}
+
 	public static int getNumberTransactions() throws SQLException {
 		String numTransactions = "SELECT COUNT(TRANSACTIONID) FROM CR_TRANSACTIONS" ;
 		
