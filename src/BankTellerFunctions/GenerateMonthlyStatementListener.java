@@ -107,13 +107,14 @@ public class GenerateMonthlyStatementListener implements ActionListener {
 				int ssn = res.getInt(2);
 				System.out.println("Hi: " + ssn + ", ");
 				String getOwnerInfo = "SELECT * FROM CR_CUSTOMER WHERE SSN = " + ssn;
+				
 				ResultSet info = Application.stmt.executeQuery(getOwnerInfo);
 				
 				while(info.next()) {
 					String ownerName = info.getString("name");
 					String ownerAddress = info.getString("address");
 					ownersInfo += "owner: " + ownerName + ", address: " + ownerAddress + "\n";
-				} 
+				}
 			}
 			
 			System.out.println(ownersInfo);
