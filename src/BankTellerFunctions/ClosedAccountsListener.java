@@ -36,8 +36,10 @@ public class ClosedAccountsListener implements ActionListener {
 			String output = "";
 			while(set.next()) {
 				String a = set.getString(1);
-				output += a += "\n";
+				output += a += ", ";
 			}
+			
+			output = output.substring(0, output.length() - 2);
 			
 			JLabel display = new JLabel(output);
 			

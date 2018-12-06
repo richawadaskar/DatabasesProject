@@ -88,10 +88,26 @@ public class CheckTransactionListener implements ActionListener {
 		
 		public void updateBalance() throws SQLException {	
 			if(existsAccount()) {
-				subtractBalanceAmount();
+				if(notClosed()) {
+					subtractBalanceAmount();
+				} else {
+					BankTellerUtility.showPopUpMessage("That account has been closed. Please try again.");
+				}
 			} else {
 				BankTellerUtility.showPopUpMessage("No account with that id exists. Please try again.");
 			}
+		}
+		
+		public boolean notClosed() throws SQLException {
+			String query = "SELECT isClosed FROM CR_ACCOUNTS WHERE AccountId = " + accountId;
+			
+			int closed = 0;
+			ResultSet res = Application.stmt.executeQuery(query);
+			while(res.next()) {
+				closed = res.getInt("accountId");
+			}
+			if(closed == 1) return false;
+			return true;
 		}
 		
 		public boolean existsAccount() throws SQLException {

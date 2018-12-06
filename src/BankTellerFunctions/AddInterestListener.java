@@ -33,6 +33,9 @@ public class AddInterestListener implements ActionListener {
 		panel.removeAll();
 		
 		// TODO: CHECK FOR DUPLICATES OF ADDING INTEREST, AND REPORT A WARNING IF THAT'S THE CASE.
+		// first check the transactions table for any add interest transaction right.. yup.
+		
+		String checkIfInterestAdded = "";
 		
 		String updateQuery = "UPDATE CR_ACCOUNTS SET balance = balance * interestRate WHERE isClosed = 0";
 		try {

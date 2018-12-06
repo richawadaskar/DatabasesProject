@@ -25,28 +25,20 @@ public class DTERListener implements ActionListener {
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
 		System.out.println("GTDR clicked");
 		
 		BankTellerUtility.setUpBackPanelToBankTeller(backPanel, backButton);
 		
 		panel.removeAll();
-		
-		/*String first = "(SELECT SSN "
-				+ "	FROM CR_TRANSACTIONS "
-				+ " WHERE TRANSACTIONTYPE = 'deposit' OR TRANSACTIONTYPE = 'transfer' OR TRANSACTIONTYPE = 'Wire' "
-				+ " GROUP BY SSN "
-				+ " HAVING SUM(AMOUNT) > 10000000)";
-		*/
-		
+				
 		String query = "SELECT * "
 				+ "FROM CR_CUSTOMER C "
 				+ "WHERE C.ssn IN "
 								+ "	(SELECT customerID "
 								+ "	FROM CR_TRANSACTIONS "
-								+ " WHERE TRANSACTIONTYPE = 'deposit' OR TRANSACTIONTYPE = 'transfer' OR TRANSACTIONTYPE = 'Wire' "
+								+ " WHERE TRANSACTIONTYPE = 'Deposit' OR TRANSACTIONTYPE = 'transfer' OR TRANSACTIONTYPE = 'wire' "
 								+ " GROUP BY customerId "
-								+ " HAVING SUM(AMOUNT) > 10000000)";
+								+ " HAVING SUM(AMOUNT) > 10000)";
 		
 		try {
 			ResultSet set = Application.stmt.executeQuery(query);
@@ -58,11 +50,12 @@ public class DTERListener implements ActionListener {
 				System.out.println("NAME: " + name + "\n");
 			}
 			
+			// TODO: Display this output somewhere on a panel or something.
+			
 			panel.removeAll();
 			BankTellerUtility.setUpBackPanelToBankTeller(backPanel, backButton);
 	
 		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 

@@ -105,6 +105,20 @@ public class Application {
 		return sdf.format(date);
 	}
 	
+	// TODO: Add button to main page of application that lets you change the date
+	public static void setDate(Date newDate) {
+		Application.date = newDate;
+		
+		if(lastDayOfMonth(newDate)) {
+			// accrue interest.  aka call addinterestlistener
+			
+		}
+	}
+	
+	public static boolean lastDayOfMonth(Date dateToCheck) {
+		return false;
+	}
+	
 	public ATM getATM() { return atm; }
 	
 	private class ATMBtnClicked implements ActionListener {
