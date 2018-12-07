@@ -4,9 +4,12 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -164,13 +167,27 @@ public class ATMOptionUtility {
 
 		int transactionId = BankTellerUtility.getNumberTransactions()+1;
 		//int customerId = getCustomerId(name);
-		
-		
-		
+
+
+
 		String addTransaction = "INSERT into CR_TRANSACTIONS values( "
 				+ transactionId + ", '" + transactionType + "', " + date + ", " + ssn + ", " + account1Id + ", null, " + amount + ", null" + ")";
 		Application.stmt.executeUpdate(addTransaction);
-		
+
+	}
+
+	public static void addToTransactionsTable(String transactionType, int ssn, int account1Id, float amount, String date) throws SQLException {
+		System.out.println(Application.getDate());
+
+		int transactionId = BankTellerUtility.getNumberTransactions()+1;
+		//int customerId = getCustomerId(name);
+
+		String d = "to_date('" + date + "', 'mm-dd-yyyy')";
+
+		String addTransaction = "INSERT into CR_TRANSACTIONS values( "
+				+ transactionId + ", '" + transactionType + "', " + d + ", " + ssn + ", " + account1Id + ", null, " + amount + ", null" + ")";
+		Application.stmt.executeUpdate(addTransaction);
+
 	}
 	
 	public static void addToTransactionsTable(String transactionType, int ssn, int account1Id, int account2Id, float amount) throws SQLException {
@@ -204,6 +221,19 @@ public class ATMOptionUtility {
 
 		addToTransactionsTable("Deposit", primaryOwnerSSN, accountId, initialMonthlyBalance);
 	}
+
+	public static void addToAccountsTable(int accountId, int primaryOwnerSSN, String branchName, float interestRate,  float balance,
+										  float initialMonthlyBalance, int isClosed, String accountType, String date) throws SQLException {
+		String addAccount = "INSERT into CR_ACCOUNTS values( "
+				+ accountId + ", "+ primaryOwnerSSN + ", '" + branchName + "', " + interestRate + ", "
+				+ balance + ", " + initialMonthlyBalance + ", " + isClosed + ", '" + accountType + "')";
+
+		//String addCustomer1 = "INSERT INTO CR_CUSTOMER VALUES (400651982, 'Pit Wilson', '911 State St', 1821)";
+		Application.stmt.executeUpdate(addAccount);
+
+		addToTransactionsTable("Deposit", primaryOwnerSSN, accountId, initialMonthlyBalance, date);
+	}
+
 
 	public static void addToPocketAccountTable(int pocketAccountId, int linkedAccount) throws SQLException {
 
@@ -316,8 +346,10 @@ public class ATMOptionUtility {
 	}
 	
 	public static void insertIntoCustomerTable() throws SQLException, IOException {
-		BufferedReader customers = new BufferedReader(new FileReader("/cs/student/richa_wadaskar/cs174A/project/DatabasesProject/users.csv"));
-            
+		BufferedReader customers = new BufferedReader(new FileReader("/Users/cindylulu/Developer/cs174A/DatabasesProject/users.csv"));
+
+		//BufferedReader accounts = new BufferedReader(new FileReader("/cs/student/richa_wadaskar/cs174A/project/DatabasesProject/pockets.csv"));
+
 		String line = customers.readLine();
             
         while(line != null) {
@@ -337,8 +369,10 @@ public class ATMOptionUtility {
         customers.close();
 	}
 
-	public static void insertIntoAccountsTable() throws SQLException, IOException {
-		BufferedReader accounts = new BufferedReader(new FileReader("/cs/student/richa_wadaskar/cs174A/project/DatabasesProject/accounts.csv"));
+	public static void insertIntoAccountsTable() throws SQLException, IOException, ParseException {
+		BufferedReader accounts = new BufferedReader(new FileReader("/Users/cindylulu/Developer/cs174A/DatabasesProject/accounts.csv"));
+
+		//BufferedReader accounts = new BufferedReader(new FileReader("/cs/student/richa_wadaskar/cs174A/project/DatabasesProject/pockets.csv"));
 
 		String line = accounts.readLine();
 
@@ -352,8 +386,9 @@ public class ATMOptionUtility {
 				float balance = Float.parseFloat(lineParts[4]);
 				float initialBalance = Float.parseFloat(lineParts[5]);
 				int isClosed = Integer.parseInt(lineParts[6]);
+
 				ATMOptionUtility.addToAccountsTable(accountId, primaryOwner, lineParts[2], interestRate,
-						balance, initialBalance, isClosed, lineParts[7]);
+						balance, initialBalance, isClosed, lineParts[7], lineParts[8]);
 				System.out.println("ADDDEDEDEDEDEDEDEDEE");
 			}
 			for(int i = 0; i < lineParts.length; i++) {
@@ -367,7 +402,7 @@ public class ATMOptionUtility {
 	}
 
 	public static void insertIntoPocketAccountsTable() throws SQLException, IOException {
-		BufferedReader accounts = new BufferedReader(new FileReader("/cs/student/richa_wadaskar/cs174A/project/DatabasesProject/pockets.csv"));
+		BufferedReader accounts = new BufferedReader(new FileReader("/Users/cindylulu/Developer/cs174A/DatabasesProject/pockets.csv"));
 
 		//BufferedReader accounts = new BufferedReader(new FileReader("/cs/student/richa_wadaskar/cs174A/project/DatabasesProject/pockets.csv"));
 
@@ -392,7 +427,9 @@ public class ATMOptionUtility {
 	}
 
 	public static void insertIntoOwnedTable() throws SQLException, IOException {
-		BufferedReader owned = new BufferedReader(new FileReader("/cs/student/richa_wadaskar/cs174A/project/DatabasesProject/accountsOwnedBy.csv"));
+		BufferedReader owned = new BufferedReader(new FileReader("/Users/cindylulu/Developer/cs174A/DatabasesProject/accountsOwnedBy.csv"));
+
+		//BufferedReader accounts = new BufferedReader(new FileReader("/cs/student/richa_wadaskar/cs174A/project/DatabasesProject/pockets.csv"));
 
 		String line = owned.readLine();
 

@@ -1,5 +1,6 @@
 package DebtsRus;
 import java.awt.*;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.Properties;
 import java.awt.event.ActionEvent;
@@ -50,7 +51,7 @@ public class Application {
 	public static final String[] accountTypes = { "Student-Checking", "Interest-Checking", "Savings", "Pocket" };
 
 
-	public static void main(String[] args) throws SQLException, IOException {
+	public static void main(String[] args) throws SQLException, IOException, ParseException {
 		app = new Application();
 		
 		app.setUpDatabaseConnection();
