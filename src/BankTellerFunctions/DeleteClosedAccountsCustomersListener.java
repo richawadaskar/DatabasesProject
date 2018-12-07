@@ -34,8 +34,8 @@ public class DeleteClosedAccountsCustomersListener implements ActionListener {
 		try {
 			int numUpdated = Application.stmt.executeUpdate(query);
 			
-			String query2 = "DELETE FROM CR_CUSTOMERS "
-					+ "WHERE CR_CUSTOMERS.SSN NOT IN ( SELECT SSN"
+			String query2 = "DELETE FROM CR_CUSTOMER "
+					+ "WHERE CR_CUSTOMER.SSN NOT IN ( SELECT SSN"
 													+ " FROM CR_ACCOUNTSOWNEDBY )";
 			
 			int numUpdated2 = Application.stmt.executeUpdate(query2);

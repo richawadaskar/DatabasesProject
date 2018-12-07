@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Calendar;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -27,12 +28,16 @@ public class DTERListener implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		System.out.println("GTDR clicked");
 		
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(Application.date);
+		int currmonth = cal.get(Calendar.MONTH);
+		
 		String query = "SELECT * "
 				+ "FROM CR_CUSTOMER C "
 				+ "WHERE C.ssn IN "
 								+ "	(SELECT customerID "
 								+ "	FROM CR_TRANSACTIONS "
-								+ " WHERE TRANSACTIONTYPE = 'Deposit' OR TRANSACTIONTYPE = 'transfer' OR TRANSACTIONTYPE = 'wire' "
+								+ " WHERE TRANSACTIONTYPE = 'Deposit' OR TRANSACTIONTYPE = 'transfer' OR TRANSACTIONTYPE = 'wire' AND EXTRACT(MONTH FROM TRANSACTIONDATE) = " + currmonth
 								+ " GROUP BY customerId "
 								+ " HAVING SUM(AMOUNT) > 10000)";
 		

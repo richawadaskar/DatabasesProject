@@ -8,6 +8,7 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import ATM.ATMOptionUtility;
 import DebtsRus.Application;
 
 public class BankTellerUtility {
@@ -81,15 +82,12 @@ public class BankTellerUtility {
 	
 	public static void addOwnersIntoOwnedByTable(ArrayList<Integer> owners, int accountId) throws SQLException {
 		boolean first = true;
-		int isPrimaryOwner = 1;
 		for(int ownerID: owners) {
-			String toTransactions = "";
-			int transactionId = BankTellerUtility.getNumberTransactions() + 1;
-			toTransactions = "INSERT INTO CR_ACCOUNTSOWNEDBY VALUES "
-					+ "(" + accountId + ", " + ownerID + ", " + isPrimaryOwner + ")";
 			if(first) {
-				isPrimaryOwner = 0;
+				ATMOptionUtility.addToOwnedByTable(accountId, ownerID, 1);
 				first = false;
+			} else {
+				ATMOptionUtility.addToOwnedByTable(accountId, ownerID, 0);
 			}
 		}
 	}

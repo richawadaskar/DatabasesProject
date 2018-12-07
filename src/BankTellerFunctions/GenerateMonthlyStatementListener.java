@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 import javax.swing.JButton;
@@ -104,6 +105,9 @@ public class GenerateMonthlyStatementListener implements ActionListener {
 			String ownersQuery = "SELECT SSN FROM CR_ACCOUNTSOWNEDBY WHERE ACCOUNTID = " + accountId;
 			ResultSet res = Application.stmt.executeQuery(ownersQuery);
 			
+			primaryOwnerAccounts.clear();
+			ownerList.clear();
+			
 			String ownersInfo = "";
 			while(res.next()) {
 				int ssn = res.getInt("ssn");
@@ -160,18 +164,30 @@ public class GenerateMonthlyStatementListener implements ActionListener {
 	            String otherInfo = accountTransactions.getString("otherinformation");
 	            Date transDate = accountTransactions.getDate("transactiondate");
 	            int account1Id = accountTransactions.getInt("account1id");
-
-	            if(transType.equals("addInterest")) {
-	            	accum += "transactionId: " + transId + ", " + "transactionType: " + transType + 
-		            		", account1Id: " + account1Id + ", otherInfo: " + otherInfo + ", dateTransaction: " + transDate + "\n";
-	            } else {
-		            int account2Id = accountTransactions.getInt("account2id");
-		            int amount = accountTransactions.getInt("amount");
-		            accum += "transactionId: " + transId + ", " + "transactionType: " + transType + 
-		            		", account1Id: " + account1Id + ", account2Id: " + account2Id + ", amount: " + amount +
-		            		", otherInfo: " + otherInfo + ", dateTransaction: " + transDate + "\n";
-	            }
 	            
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(transDate);
+				int month = cal.get(Calendar.MONTH);
+				int year = cal.get(Calendar.YEAR);
+				int day = cal.get(Calendar.DAY_OF_MONTH);	
+				
+				cal.setTime(Application.date);
+				int currentMonth = cal.get(Calendar.MONTH);
+	            int currentYear = cal.get(Calendar.YEAR);
+				int currentDay = cal.get(Calendar.DAY_OF_MONTH);
+				
+	            if(month == currentMonth && year == currentYear && day <= currentDay) {
+		            if(transType.equals("addInterest")) {
+		            	accum += "transactionId: " + transId + ", " + "transactionType: " + transType + 
+			            		", account1Id: " + account1Id + ", otherInfo: " + otherInfo + ", dateTransaction: " + transDate + "\n";
+		            } else {
+			            int account2Id = accountTransactions.getInt("account2id");
+			            int amount = accountTransactions.getInt("amount");
+			            accum += "transactionId: " + transId + ", " + "transactionType: " + transType + 
+			            		", account1Id: " + account1Id + ", account2Id: " + account2Id + ", amount: " + amount +
+			            		", otherInfo: " + otherInfo + ", dateTransaction: " + transDate + "\n";
+		            }
+	            }
 			}
 			
 			return accum;

@@ -8,6 +8,7 @@ import java.sql.SQLException;
 
 import javax.swing.*;
 
+import BankTellerFunctions.BankTellerUtility;
 import DebtsRus.Application;
 
 
@@ -66,6 +67,7 @@ public class CollectListener implements ActionListener {
 			int pocketAccountId = Integer.parseInt(fromPocketAccount.getSelectedItem().toString());
 			int parentAccountId = ATMOptionUtility.getLinkedAccount(pocketAccountId);
 			float amountCollect = Float.parseFloat(collectAmount.getText());
+			Float balance = ATMOptionUtility.getBalanceFromAccountId(parentAccountId);
 
 			try {
 				if(ATMOptionUtility.checkEnoughBalance(pocketAccountId, amountCollect)) {
@@ -73,6 +75,14 @@ public class CollectListener implements ActionListener {
 					ATMOptionUtility.addMoneyToAccountId(parentAccountId, (float)(amountCollect*0.97));
 					ATMOptionUtility.addToTransactionsTable("Collect", ssn, pocketAccountId, parentAccountId, amountCollect);
 					JOptionPane.showMessageDialog(frame, "Collect succeeded.");
+					if(balance - amountCollect <= 0.01) {
+						String closeAccount = "UPDATE CR_ACCOUNTS SET ISCLOSED = 1 WHERE ACCOUNTID = " + parentAccountId;
+						int numRowsUpdated = Application.stmt.executeUpdate(closeAccount);
+						assert(numRowsUpdated == 1);
+						
+						BankTellerUtility.showPopUpMessage("Since your account: " + parentAccountId + " balance was less than or "
+								+ "equal to $0.01, your account was closed.");
+					}
 				} else {
 					JOptionPane.showMessageDialog(frame, "You don't have enough to make this transaction.");
 				}

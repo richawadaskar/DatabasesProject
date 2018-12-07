@@ -8,6 +8,7 @@ import java.sql.SQLException;
 
 import javax.swing.*;
 
+import BankTellerFunctions.BankTellerUtility;
 import DebtsRus.Application;
 
 public class TopUpListener implements ActionListener {
@@ -78,6 +79,7 @@ public class TopUpListener implements ActionListener {
 			topUpAccountId = Integer.parseInt(topUpAccountNumber.getSelectedItem().toString());
 			fromAccountId = ATMOptionUtility.getLinkedAccount(topUpAccountId);
 			fromAccount.setText(Integer.toString(fromAccountId));
+			Float balance = ATMOptionUtility.getBalanceFromAccountId(fromAccountId);
 
 			float amountTopUp = Float.parseFloat(topUpAmount.getText());
 
@@ -88,6 +90,14 @@ public class TopUpListener implements ActionListener {
 					ATMOptionUtility.addMoneyToAccountId(topUpAccountId, amountTopUp);
 					ATMOptionUtility.addToTransactionsTable("Top-up", ssn, topUpAccountId, fromAccountId, amountTopUp);
 					JOptionPane.showMessageDialog(frame, "Top-up succeeded.");
+					if(balance - amountTopUp <= 0.01) {
+						String closeAccount = "UPDATE CR_ACCOUNTS SET ISCLOSED = 1 WHERE ACCOUNTID = " + fromAccountId;
+						int numRowsUpdated = Application.stmt.executeUpdate(closeAccount);
+						assert(numRowsUpdated == 1);
+						
+						BankTellerUtility.showPopUpMessage("Since your account: " + fromAccountId + " balance was less than or "
+								+ "equal to $0.01, your account was closed.");
+					}
 				} else {
 					JOptionPane.showMessageDialog(frame, "You don't have enough to make this transaction.");
 				}

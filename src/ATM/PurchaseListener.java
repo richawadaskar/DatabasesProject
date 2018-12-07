@@ -8,6 +8,7 @@ import java.sql.SQLException;
 
 import javax.swing.*;
 
+import BankTellerFunctions.BankTellerUtility;
 import DebtsRus.Application;
 
 
@@ -65,13 +66,22 @@ public class PurchaseListener implements ActionListener {
 			// TODO Auto-generated method stub
 			int accountId = Integer.parseInt(accountNumber.getSelectedItem().toString());
 			float amountPurchase = Float.parseFloat(purchaseAmount.getText());
-			
+			Float balance = ATMOptionUtility.getBalanceFromAccountId(accountId);
+
 			// check if account exists and that its type a pocket
 			try {
 				if(ATMOptionUtility.checkEnoughBalance(accountId, amountPurchase)) {
 					ATMOptionUtility.subtractMoneyToAccountId(accountId, amountPurchase);
 					ATMOptionUtility.addToTransactionsTable("Purchase", ssn, accountId, amountPurchase);
 					JOptionPane.showMessageDialog(frame, "Purchase succeeded.");
+					if(balance - amountPurchase <= 0.01) {
+						String closeAccount = "UPDATE CR_ACCOUNTS SET ISCLOSED = 1 WHERE ACCOUNTID = " + accountId;
+						int numRowsUpdated = Application.stmt.executeUpdate(closeAccount);
+						assert(numRowsUpdated == 1);
+						
+						BankTellerUtility.showPopUpMessage("Since your account: " + accountId + " balance was less than or "
+								+ "equal to $0.01, your account was closed.");
+					}
 				} else {
 					JOptionPane.showMessageDialog(frame, "You don't have enough to make this transaction.");
 				}

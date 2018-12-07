@@ -9,6 +9,7 @@ import java.sql.SQLException;
 
 import javax.swing.*;
 
+import BankTellerFunctions.BankTellerUtility;
 import DebtsRus.Application;
 
 public class PayFriendListener implements ActionListener {
@@ -70,6 +71,7 @@ public class PayFriendListener implements ActionListener {
 			int fromAccountId = Integer.parseInt(fromAccount.getSelectedItem().toString());
 			int toAccountId = Integer.parseInt(toAccount.getSelectedItem().toString());
 			float amountPayFriend = Float.parseFloat(payFriendAmount.getText());
+			Float balance = ATMOptionUtility.getBalanceFromAccountId(fromAccountId);
 
 			try {
 				if(ATMOptionUtility.checkEnoughBalance(fromAccountId, amountPayFriend)) {
@@ -77,6 +79,14 @@ public class PayFriendListener implements ActionListener {
 					ATMOptionUtility.addMoneyToAccountId(toAccountId, amountPayFriend);
 					ATMOptionUtility.addToTransactionsTable("Pay-Friend", ssn, fromAccountId, toAccountId, amountPayFriend);
 					JOptionPane.showMessageDialog(frame, "Pay-Friend succeeded.");
+					if(balance - amountPayFriend <= 0.01) {
+						String closeAccount = "UPDATE CR_ACCOUNTS SET ISCLOSED = 1 WHERE ACCOUNTID = " + fromAccountId;
+						int numRowsUpdated = Application.stmt.executeUpdate(closeAccount);
+						assert(numRowsUpdated == 1);
+						
+						BankTellerUtility.showPopUpMessage("Since your account: " + fromAccountId + " balance was less than or "
+								+ "equal to $0.01, your account was closed.");
+					}
 				} else {
 					JOptionPane.showMessageDialog(frame, "You don't have enough to make this transaction.");
 				}

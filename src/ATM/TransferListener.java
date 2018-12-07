@@ -8,6 +8,7 @@ import java.sql.SQLException;
 
 import javax.swing.*;
 
+import BankTellerFunctions.BankTellerUtility;
 import DebtsRus.*;
 
 public class TransferListener implements ActionListener {
@@ -70,6 +71,7 @@ public class TransferListener implements ActionListener {
 			int fromAccountId = Integer.parseInt(fromAccount.getSelectedItem().toString());
 			int toAccountId = Integer.parseInt(toAccount.getSelectedItem().toString());
 			float amountTransfer = Float.parseFloat(transferAmount.getText());
+			Float balance = ATMOptionUtility.getBalanceFromAccountId(fromAccountId);
 
 			if (fromAccountId == toAccountId) {
 				JOptionPane.showMessageDialog(frame, "Illegal transfer. Cannot pick two same accounts.");
@@ -82,6 +84,14 @@ public class TransferListener implements ActionListener {
 						ATMOptionUtility.addMoneyToAccountId(toAccountId, amountTransfer);
 						ATMOptionUtility.addToTransactionsTable("Transfer", ssn, fromAccountId, toAccountId, amountTransfer);
 						JOptionPane.showMessageDialog(frame, "Transfer succeeded.");
+						if(balance - amountTransfer <= 0.01) {
+							String closeAccount = "UPDATE CR_ACCOUNTS SET ISCLOSED = 1 WHERE ACCOUNTID = " + fromAccountId;
+							int numRowsUpdated = Application.stmt.executeUpdate(closeAccount);
+							assert(numRowsUpdated == 1);
+							
+							BankTellerUtility.showPopUpMessage("Since your account: " + fromAccountId + " balance was less than or "
+									+ "equal to $0.01, your account was closed.");
+						}
 					} else {
 						JOptionPane.showMessageDialog(frame, "You don't have enough to make this transaction.");
 					}

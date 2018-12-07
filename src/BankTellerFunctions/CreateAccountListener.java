@@ -150,11 +150,12 @@ public class CreateAccountListener implements ActionListener {
 				} else {
 					int accountIdSelected = Integer.parseInt(accountLinked.getSelectedItem().toString());
 					if (ATMOptionUtility.checkEnoughBalance(accountIdSelected, amount)) {
-						ATMOptionUtility.addToPocketAccountTable(topUpAccountId, accountIdSelected);
 						ATMOptionUtility.subtractMoneyToAccountId(accountIdSelected, amount);
-						ATMOptionUtility.addMoneyToAccountId(accountIdSelected, amount);
+						ATMOptionUtility.addToAccountsTable(topUpAccountId, owners.get(0), "SB", 0, amount, amount, 0, "Pocket");
+						ATMOptionUtility.addToPocketAccountTable(topUpAccountId, accountIdSelected);
 						ATMOptionUtility.addToTransactionsTable("Top-up", owners.get(0), topUpAccountId, accountIdSelected, amount);
 						BankTellerUtility.showPopUpMessage("Top-up succeeded.");
+						BankTellerUtility.addOwnersIntoOwnedByTable(owners, topUpAccountId);
 					} else {
 						BankTellerUtility.showPopUpMessage("You don't have enough money in your linked account to make this transaction.");
 					}
@@ -174,15 +175,13 @@ public class CreateAccountListener implements ActionListener {
 				float amount = Integer.parseInt(depositAmount.getText());
 				int accountId = BankTellerUtility.generateAccountID() + 1;
 				System.out.println(accountId);
-				
+				System.out.println(amount);
 				assert(amount > 0);
 				
 				float interestRate = (float) BankTellerUtility.getInterestRate(typeAccount);
 				int primary = owners.get(0);
 				
 				ATMOptionUtility.addToAccountsTable(accountId, primary, "Santa Barbara", interestRate, amount, amount, 0, typeAccount);
-				
-				ATMOptionUtility.addMoneyToAccountId(accountId, amount);
 				ATMOptionUtility.addToTransactionsTable("Deposit", owners.get(0), accountId, amount);
 				
 				BankTellerUtility.showPopUpMessage("New account was successfully created.");

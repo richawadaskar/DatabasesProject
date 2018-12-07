@@ -369,6 +369,8 @@ public class ATMOptionUtility {
 	public static void insertIntoPocketAccountsTable() throws SQLException, IOException {
 		BufferedReader accounts = new BufferedReader(new FileReader("/cs/student/richa_wadaskar/cs174A/project/DatabasesProject/pockets.csv"));
 
+		//BufferedReader accounts = new BufferedReader(new FileReader("/cs/student/richa_wadaskar/cs174A/project/DatabasesProject/pockets.csv"));
+
 		String line = accounts.readLine();
 
 		while(line != null) {
